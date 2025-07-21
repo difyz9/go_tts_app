@@ -191,11 +191,11 @@ func (amos *AudioMergeOnlyService) validateSingleAudioFile(audioPath string) err
 
 	// 获取文件扩展名
 	ext := strings.ToLower(filepath.Ext(audioPath))
-	
+
 	// 根据扩展名验证文件头部
 	switch ext {
 	case ".mp3":
-		if n >= 3 && (string(buffer[:3]) == "ID3" || 
+		if n >= 3 && (string(buffer[:3]) == "ID3" ||
 			(buffer[0] == 0xFF && (buffer[1]&0xF0) == 0xF0)) {
 			return nil
 		}

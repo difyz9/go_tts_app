@@ -148,7 +148,7 @@ func runEdgeTTS() error {
 	fmt.Printf("- 语速: %s\n", rate)
 	fmt.Printf("- 音量: %s\n", volume)
 	fmt.Printf("- 音调: %s\n", pitch)
-	
+
 	// 显示处理模式
 	if smartMarkdown {
 		fmt.Printf("- 处理模式: 智能Markdown模式（blackfriday解析）\n")
@@ -159,7 +159,7 @@ func runEdgeTTS() error {
 
 	// 创建Edge TTS服务
 	edgeService := service.NewEdgeTTSService(config)
-	
+
 	// 根据模式选择处理方法
 	if smartMarkdown {
 		fmt.Println("开始智能Markdown处理（Edge TTS）...")
@@ -168,7 +168,7 @@ func runEdgeTTS() error {
 		fmt.Println("开始并发处理文本文件（Edge TTS）...")
 		err = edgeService.ProcessInputFileConcurrent()
 	}
-	
+
 	if err != nil {
 		return fmt.Errorf("处理文件失败: %v", err)
 	}
@@ -198,7 +198,7 @@ func init() {
 	edgeCmd.Flags().StringVar(&edgeRate, "rate", "", "语速 (如: +20%, -10%)")
 	edgeCmd.Flags().StringVar(&edgeVolume, "volume", "", "音量 (如: +10%, -20%)")
 	edgeCmd.Flags().StringVar(&edgePitch, "pitch", "", "音调 (如: +10Hz, -5Hz)")
-	
+
 	// 添加智能Markdown处理标志
 	edgeCmd.Flags().BoolVar(&smartMarkdown, "smart-markdown", false, "启用智能Markdown处理模式（推荐用于.md文件）")
 }

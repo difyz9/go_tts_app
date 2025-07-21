@@ -112,7 +112,7 @@ func (ams *AudioMergeService) ProcessHistoryFile() error {
 
 	for i, line := range lines {
 		trimmedLine := strings.TrimSpace(line)
-		
+
 		// 跳过完全空行
 		if trimmedLine == "" {
 			emptyLineCount++
@@ -157,14 +157,14 @@ func (ams *AudioMergeService) ProcessHistoryFile() error {
 
 		validLineCount++
 		fmt.Printf("正在处理第 %d 行: %s\n", i+1, processedText)
-		
+
 		// 使用重试机制生成音频
 		audioFile, err := ams.generateAudioWithRetry(processedText, i, 3)
 		if err != nil {
 			fmt.Printf("生成第 %d 行音频失败（经过重试）: %v\n", i+1, err)
 			continue
 		}
-		
+
 		// 验证生成的音频文件
 		if err := ams.validateAudioFile(audioFile); err != nil {
 			fmt.Printf("第 %d 行音频文件验证失败: %v\n", i+1, err)
@@ -172,7 +172,7 @@ func (ams *AudioMergeService) ProcessHistoryFile() error {
 			os.Remove(audioFile)
 			continue
 		}
-		
+
 		audioFiles = append(audioFiles, audioFile)
 	}
 
@@ -180,7 +180,7 @@ func (ams *AudioMergeService) ProcessHistoryFile() error {
 		return fmt.Errorf("没有成功生成任何音频文件")
 	}
 
-	fmt.Printf("📊 文本处理统计: 总行数=%d, 空行=%d, 标记行=%d, 无效文本=%d, 成功生成=%d\n", 
+	fmt.Printf("📊 文本处理统计: 总行数=%d, 空行=%d, 标记行=%d, 无效文本=%d, 成功生成=%d\n",
 		len(lines), emptyLineCount, skippedLineCount, invalidTextCount, len(audioFiles))
 
 	// 合并音频文件
@@ -509,7 +509,7 @@ func (ams *AudioMergeService) validateAudioFile(audioPath string) error {
 	switch codec {
 	case "mp3":
 		// MP3文件头部验证
-		if n >= 3 && (string(buffer[:3]) == "ID3" || 
+		if n >= 3 && (string(buffer[:3]) == "ID3" ||
 			(buffer[0] == 0xFF && (buffer[1]&0xF0) == 0xF0)) {
 			fmt.Printf("  ✓ MP3音频文件验证通过: %s (%.2f KB)\n", audioPath, float64(fileInfo.Size())/1024)
 			return nil
@@ -532,7 +532,7 @@ func (ams *AudioMergeService) validateAudioFile(audioPath string) error {
 // generateAudioWithRetry 带重试机制的音频生成
 func (ams *AudioMergeService) generateAudioWithRetry(text string, index int, maxRetries int) (string, error) {
 	var lastErr error
-	
+
 	for attempt := 1; attempt <= maxRetries; attempt++ {
 		audioFile, err := ams.generateAudioForText(text, index)
 		if err == nil {
@@ -541,10 +541,10 @@ func (ams *AudioMergeService) generateAudioWithRetry(text string, index int, max
 			}
 			return audioFile, nil
 		}
-		
+
 		lastErr = err
 		fmt.Printf("  ✗ 第 %d 行第 %d 次尝试失败: %v\n", index+1, attempt, err)
-		
+
 		if attempt < maxRetries {
 			// 等待后重试，递增等待时间
 			waitTime := time.Duration(attempt) * 2 * time.Second
@@ -552,6 +552,6 @@ func (ams *AudioMergeService) generateAudioWithRetry(text string, index int, max
 			time.Sleep(waitTime)
 		}
 	}
-	
+
 	return "", fmt.Errorf("第 %d 行经过 %d 次重试后仍然失败，最后错误: %v", index+1, maxRetries, lastErr)
 }

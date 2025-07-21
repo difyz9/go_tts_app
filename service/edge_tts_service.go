@@ -70,7 +70,7 @@ func (ets *EdgeTTSService) ProcessMarkdownFile(inputFile, outputDir string) erro
 
 	// 使用专业Markdown处理器提取文本
 	sentences := ets.textProcessor.ProcessMarkdownDocument(string(content))
-	
+
 	if len(sentences) == 0 {
 		return fmt.Errorf("没有提取到有效的文本内容")
 	}
@@ -134,10 +134,10 @@ func (ets *EdgeTTSService) ProcessInputFileConcurrent() error {
 	tasks := make([]EdgeTTSTask, 0, len(lines))
 	emptyLineCount := 0
 	invalidTextCount := 0
-	
+
 	for i, line := range lines {
 		trimmedLine := strings.TrimSpace(line)
-		
+
 		// 跳过完全空行
 		if trimmedLine == "" {
 			emptyLineCount++
@@ -163,7 +163,7 @@ func (ets *EdgeTTSService) ProcessInputFileConcurrent() error {
 		return fmt.Errorf("没有有效的文本行需要处理")
 	}
 
-	fmt.Printf("📊 文本处理统计: 总行数=%d, 空行=%d, 无效文本=%d, 有效任务=%d\n", 
+	fmt.Printf("📊 文本处理统计: 总行数=%d, 空行=%d, 无效文本=%d, 有效任务=%d\n",
 		len(lines), emptyLineCount, invalidTextCount, len(tasks))
 
 	// 并发处理任务
@@ -367,7 +367,7 @@ func (ets *EdgeTTSService) generateAudioForText(text string, index int) (string,
 // generateAudioWithRetry 带重试机制的音频生成
 func (ets *EdgeTTSService) generateAudioWithRetry(text string, index int, maxRetries int) (string, error) {
 	var lastErr error
-	
+
 	for attempt := 1; attempt <= maxRetries; attempt++ {
 		audioPath, err := ets.generateAudioForText(text, index)
 		if err == nil {
@@ -376,10 +376,10 @@ func (ets *EdgeTTSService) generateAudioWithRetry(text string, index int, maxRet
 			}
 			return audioPath, nil
 		}
-		
+
 		lastErr = err
 		fmt.Printf("  ✗ 任务 %d 第 %d 次尝试失败: %v\n", index, attempt, err)
-		
+
 		if attempt < maxRetries {
 			// 等待后重试，递增等待时间
 			waitTime := time.Duration(attempt) * time.Second
@@ -387,7 +387,7 @@ func (ets *EdgeTTSService) generateAudioWithRetry(text string, index int, maxRet
 			time.Sleep(waitTime)
 		}
 	}
-	
+
 	return "", fmt.Errorf("任务 %d 经过 %d 次重试后仍然失败，最后错误: %v", index, maxRetries, lastErr)
 }
 
@@ -421,7 +421,7 @@ func (ets *EdgeTTSService) validateAudioFile(audioPath string) error {
 
 	// 检查MP3文件头部标识
 	// MP3文件通常以ID3标签 (ID3) 或 MP3帧同步字 (0xFF 0xFB/0xFA/0xF3/0xF2) 开头
-	if n >= 3 && (string(buffer[:3]) == "ID3" || 
+	if n >= 3 && (string(buffer[:3]) == "ID3" ||
 		(buffer[0] == 0xFF && (buffer[1]&0xF0) == 0xF0)) {
 		fmt.Printf("  ✓ 音频文件验证通过: %s (%.2f KB)\n", audioPath, float64(fileInfo.Size())/1024)
 		return nil
@@ -441,7 +441,7 @@ func (ets *EdgeTTSService) mergeAudioFiles(audioFiles []string) error {
 	// 预先验证所有音频文件
 	validAudioFiles := []string{}
 	invalidCount := 0
-	
+
 	for _, audioFile := range audioFiles {
 		if err := ets.validateAudioFile(audioFile); err != nil {
 			fmt.Printf("⚠️  跳过无效音频文件: %s, 原因: %v\n", audioFile, err)

@@ -21,6 +21,8 @@ GOFILES := $(shell find . -name "*.go" -type f)
 # 默认目标
 .DEFAULT_GOAL := help
 
+# gofmt -s -w .
+
 # 帮助信息
 .PHONY: help
 help: ## 显示帮助信息

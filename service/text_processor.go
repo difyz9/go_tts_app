@@ -65,24 +65,24 @@ func (tp *TextProcessor) ProcessText(text string) string {
 func (tp *TextProcessor) ProcessMarkdownDocument(markdown string) []string {
 	// 使用专业的Markdown处理器提取纯文本
 	extractedText := tp.markdownProcessor.ExtractTextForTTS(markdown)
-	
+
 	// 分割成适合TTS的句子
 	sentences := tp.markdownProcessor.SplitIntoSentences(extractedText)
-	
+
 	// 对每个句子进行进一步的文本处理
 	var processedSentences []string
 	for _, sentence := range sentences {
 		if sentence == "" {
 			continue
 		}
-		
+
 		// 使用现有的文本处理逻辑
 		processed := tp.ProcessText(sentence)
 		if processed != "" && tp.IsValidTextForTTS(processed) {
 			processedSentences = append(processedSentences, processed)
 		}
 	}
-	
+
 	return processedSentences
 }
 
@@ -136,24 +136,24 @@ func (tp *TextProcessor) removeTables(text string) string {
 	inTable := false
 	for _, line := range lines {
 		trimmedLine := strings.TrimSpace(line)
-		
+
 		// 检查是否是表格行（包含管道符 |）
 		if strings.Contains(trimmedLine, "|") && tp.isTableRow(trimmedLine) {
 			inTable = true
 			continue // 跳过表格行
 		}
-		
+
 		// 检查表格分隔符行（如 |---|---|）
 		if tp.isTableSeparator(trimmedLine) {
 			inTable = true
 			continue
 		}
-		
+
 		// 如果前一行是表格，当前行不是表格，则表格结束
 		if inTable && !strings.Contains(trimmedLine, "|") {
 			inTable = false
 		}
-		
+
 		// 不在表格中的行保留
 		if !inTable {
 			filteredLines = append(filteredLines, line)
@@ -254,12 +254,12 @@ func (tp *TextProcessor) isTableRow(line string) bool {
 	if !strings.Contains(line, "|") {
 		return false
 	}
-	
+
 	// 排除代码块中的管道符
 	if strings.HasPrefix(strings.TrimSpace(line), "```") || strings.HasPrefix(strings.TrimSpace(line), "~~~") {
 		return false
 	}
-	
+
 	// 检查是否有足够的表格特征（至少2个管道符）
 	pipeCount := strings.Count(line, "|")
 	return pipeCount >= 2
@@ -271,10 +271,10 @@ func (tp *TextProcessor) isTableSeparator(line string) bool {
 	if !strings.Contains(line, "|") || !strings.Contains(line, "-") {
 		return false
 	}
-	
+
 	// 移除空格后检查
 	cleaned := strings.ReplaceAll(line, " ", "")
-	
+
 	// 检查是否符合表格分隔符模式
 	separatorRegex := regexp.MustCompile(`^\|?(:?-+:?\|)+:?-+:?\|?$`)
 	return separatorRegex.MatchString(cleaned)
@@ -547,74 +547,74 @@ func (tp *TextProcessor) IsValidTextForTTS(text string) bool {
 // isCodeBlock 检查是否为代码块
 func (tp *TextProcessor) isCodeBlock(text string) bool {
 	text = strings.TrimSpace(text)
-	
+
 	// 检查是否以代码块标记开始或结束
 	if strings.HasPrefix(text, "```") || strings.HasSuffix(text, "```") {
 		return true
 	}
-	
+
 	if strings.HasPrefix(text, "~~~") || strings.HasSuffix(text, "~~~") {
 		return true
 	}
-	
+
 	// 检查是否为缩进代码（行首4个空格）
 	if strings.HasPrefix(text, "    ") && len(strings.TrimLeft(text, " ")) > 0 {
 		return true
 	}
-	
+
 	// 检查常见的代码模式
 	codePatterns := []string{
-		`^func\s+\w+\s*\(`,           // Go函数定义
-		`^package\s+\w+`,            // Go包声明  
-		`^import\s+`,                // 导入语句
-		`^class\s+\w+`,              // 类定义
-		`^def\s+\w+\s*\(`,           // Python函数定义
-		`^if\s*\(.*\)\s*\{`,         // if语句
-		`^for\s*\(.*\)\s*\{`,        // for循环 (C-style)
-		`^for\s+\w+\s*:=.*\{`,       // Go for循环
-		`^while\s*\(.*\)\s*\{`,      // while循环
-		`^\s*\{`,                    // 单独的花括号
-		`^\s*\}`,                    // 单独的花括号
-		`^\s*return\s*;?\s*$`,       // return语句（修复：更严格的匹配）
+		`^func\s+\w+\s*\(`,         // Go函数定义
+		`^package\s+\w+`,           // Go包声明
+		`^import\s+`,               // 导入语句
+		`^class\s+\w+`,             // 类定义
+		`^def\s+\w+\s*\(`,          // Python函数定义
+		`^if\s*\(.*\)\s*\{`,        // if语句
+		`^for\s*\(.*\)\s*\{`,       // for循环 (C-style)
+		`^for\s+\w+\s*:=.*\{`,      // Go for循环
+		`^while\s*\(.*\)\s*\{`,     // while循环
+		`^\s*\{`,                   // 单独的花括号
+		`^\s*\}`,                   // 单独的花括号
+		`^\s*return\s*;?\s*$`,      // return语句（修复：更严格的匹配）
 		`^\s*return\s+[^a-zA-Z中文]`, // return带值
-		`fmt\.Print`,                // 常见函数调用
-		`console\.log`,              // JavaScript console
-		`System\.out\.print`,        // Java输出
+		`fmt\.Print`,               // 常见函数调用
+		`console\.log`,             // JavaScript console
+		`System\.out\.print`,       // Java输出
 	}
-	
+
 	for _, pattern := range codePatterns {
 		matched, _ := regexp.MatchString(pattern, text)
 		if matched {
 			return true
 		}
 	}
-	
+
 	return false
 }
 
 // isImage 检查是否为图片
 func (tp *TextProcessor) isImage(text string) bool {
 	text = strings.TrimSpace(text)
-	
+
 	// Markdown图片格式
 	imageRegex := regexp.MustCompile(`^!\[([^\]]*)\]\([^)]+\)`)
 	if imageRegex.MatchString(text) {
 		return true
 	}
-	
+
 	// HTML图片标签
 	htmlImageRegex := regexp.MustCompile(`(?i)^<img[^>]*>`)
 	if htmlImageRegex.MatchString(text) {
 		return true
 	}
-	
+
 	return false
 }
 
 // isPureURL 检查是否为纯URL或邮箱
 func (tp *TextProcessor) isPureURL(text string) bool {
 	text = strings.TrimSpace(text)
-	
+
 	// URL模式
 	urlPatterns := []string{
 		`^https?://[^\s]+$`,
@@ -622,13 +622,13 @@ func (tp *TextProcessor) isPureURL(text string) bool {
 		`^www\.[^\s]+$`,
 		`^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$`, // 邮箱
 	}
-	
+
 	for _, pattern := range urlPatterns {
 		if matched, _ := regexp.MatchString(pattern, text); matched {
 			return true
 		}
 	}
-	
+
 	return false
 }
 
