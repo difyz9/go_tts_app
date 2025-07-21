@@ -58,11 +58,9 @@ jobs:
         fi
 
     - name: Upload Release Asset
-      uses: actions/upload-release-asset@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ github.event.release.upload_url }}
-        asset_path: ./tts_app_${{ matrix.goos }}_${{ matrix.goarch }}${{ matrix.goos == 'windows' && '.zip' || '.tar.gz' }}
-        asset_name: tts_app_${{ matrix.goos }}_${{ matrix.goarch }}${{ matrix.goos == 'windows' && '.zip' || '.tar.gz' }}
-        asset_content_type: ${{ matrix.goos == 'windows' && 'application/zip' || 'application/gzip' }}
+      run: |
+        ASSET_PATH="./tts_app_${{ matrix.goos }}_${{ matrix.goarch }}${{ matrix.goos == 'windows' && '.zip' || '.tar.gz' }}"
+        ASSET_NAME="tts_app_${{ matrix.goos }}_${{ matrix.goarch }}${{ matrix.goos == 'windows' && '.zip' || '.tar.gz' }}"
+        gh release upload ${{ github.event.release.tag_name }} "$ASSET_PATH" --name "$ASSET_NAME"
