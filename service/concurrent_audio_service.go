@@ -78,7 +78,7 @@ func (cas *ConcurrentAudioService) ProcessInputFileConcurrent() error {
 	tasks := make([]TTSTask, 0, len(lines))
 	validLineCount := 0
 	skippedLineCount := 0
-	
+
 	for i, line := range lines {
 		trimmedLine := strings.TrimSpace(line)
 		if trimmedLine == "" {

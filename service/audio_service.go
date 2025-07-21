@@ -25,22 +25,22 @@ func NewConfigService(configPath string) (*ConfigService, error) {
 	// 检查配置文件是否存在，如果不存在则初始化
 	if _, err := os.Stat(configPath); os.IsNotExist(err) {
 		fmt.Printf("配置文件 %s 不存在，正在自动初始化...\n", configPath)
-		
+
 		initializer := NewConfigInitializer()
 		if err := initializer.InitializeConfig(configPath); err != nil {
 			return nil, fmt.Errorf("初始化配置文件失败: %v", err)
 		}
-		
+
 		// 同时创建示例输入文件
 		inputFile := "input.txt"
 		if err := initializer.CreateSampleInputFile(inputFile); err != nil {
 			fmt.Printf("警告: 创建示例输入文件失败: %v\n", err)
 		}
-		
+
 		// 显示快速开始指南
 		initializer.ShowQuickStart()
 	}
-	
+
 	config, err := loadConfig(configPath)
 	if err != nil {
 		return nil, err
@@ -107,7 +107,7 @@ func (ams *AudioMergeService) ProcessHistoryFile() error {
 	audioFiles := make([]string, 0, len(lines))
 	validLineCount := 0
 	skippedLineCount := 0
-	
+
 	for i, line := range lines {
 		trimmedLine := strings.TrimSpace(line)
 		if trimmedLine == "" {

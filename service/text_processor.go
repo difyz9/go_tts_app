@@ -58,7 +58,7 @@ func (tp *TextProcessor) ProcessText(text string) string {
 
 // processMarkdownFormatting 处理Markdown格式字符
 func (tp *TextProcessor) processMarkdownFormatting(text string) string {
-	// 处理加粗标记 **text** 
+	// 处理加粗标记 **text**
 	// 保留内容，移除markdown标记，但保留用于TTS的适当停顿
 	boldRegex := regexp.MustCompile(`\*\*([^*]+)\*\*`)
 	text = boldRegex.ReplaceAllString(text, "$1")
@@ -86,35 +86,35 @@ func (tp *TextProcessor) processMarkdownFormatting(text string) string {
 func (tp *TextProcessor) processEscapeCharacters(text string) string {
 	// 处理常见的转义序列
 	replacements := map[string]string{
-		`\*`:  "*",   // 转义的星号
-		`\\`:  "\\",  // 转义的反斜杠
-		`\n`:  " ",   // 换行符转为空格
-		`\t`:  " ",   // 制表符转为空格
-		`\r`:  "",    // 回车符删除
-		`\"`:  "\"",  // 转义的双引号
-		`\'`:  "'",   // 转义的单引号
-		`\&`:  "&",   // 转义的&符号
-		`\#`:  "#",   // 转义的#符号
-		`\%`:  "%",   // 转义的%符号
-		`\$`:  "$",   // 转义的$符号
-		`\@`:  "@",   // 转义的@符号
-		`\!`:  "!",   // 转义的!符号
-		`\?`:  "?",   // 转义的?符号
-		`\+`:  "+",   // 转义的+符号
-		`\=`:  "=",   // 转义的=符号
-		`\-`:  "-",   // 转义的-符号
-		`\_`:  "_",   // 转义的下划线
-		`\^`:  "^",   // 转义的^符号
-		`\~`:  "~",   // 转义的~符号
-		`\|`:  "|",   // 转义的|符号
-		`\>`:  ">",   // 转义的>符号
-		`\<`:  "<",   // 转义的<符号
-		`\{`:  "{",   // 转义的{符号
-		`\}`:  "}",   // 转义的}符号
-		`\[`:  "[",   // 转义的[符号
-		`\]`:  "]",   // 转义的]符号
-		`\(`:  "(",   // 转义的(符号
-		`\)`:  ")",   // 转义的)符号
+		`\*`: "*",  // 转义的星号
+		`\\`: "\\", // 转义的反斜杠
+		`\n`: " ",  // 换行符转为空格
+		`\t`: " ",  // 制表符转为空格
+		`\r`: "",   // 回车符删除
+		`\"`: "\"", // 转义的双引号
+		`\'`: "'",  // 转义的单引号
+		`\&`: "&",  // 转义的&符号
+		`\#`: "#",  // 转义的#符号
+		`\%`: "%",  // 转义的%符号
+		`\$`: "$",  // 转义的$符号
+		`\@`: "@",  // 转义的@符号
+		`\!`: "!",  // 转义的!符号
+		`\?`: "?",  // 转义的?符号
+		`\+`: "+",  // 转义的+符号
+		`\=`: "=",  // 转义的=符号
+		`\-`: "-",  // 转义的-符号
+		`\_`: "_",  // 转义的下划线
+		`\^`: "^",  // 转义的^符号
+		`\~`: "~",  // 转义的~符号
+		`\|`: "|",  // 转义的|符号
+		`\>`: ">",  // 转义的>符号
+		`\<`: "<",  // 转义的<符号
+		`\{`: "{",  // 转义的{符号
+		`\}`: "}",  // 转义的}符号
+		`\[`: "[",  // 转义的[符号
+		`\]`: "]",  // 转义的]符号
+		`\(`: "(",  // 转义的(符号
+		`\)`: ")",  // 转义的)符号
 	}
 
 	for escaped, unescaped := range replacements {
@@ -129,24 +129,24 @@ func (tp *TextProcessor) processSpecialSymbols(text string) string {
 	// 为一些特殊符号添加适当的语音停顿或读法
 	// 只有当符号独立存在且不在常见上下文中时才替换
 	symbolReplacements := map[string]string{
-		"@":  "at",
-		"#":  "井号", 
-		"$":  "美元",
-		"%":  "百分号",
-		"^":  "上标",
-		"&":  "和",
-		"*":  "星号",
-		"+":  "加号",
-		"=":  "等号",
-		"|":  "竖线",
-		"~":  "波浪号",
-		"`":  "反引号",
-		"<":  "小于号",
-		">":  "大于号",
-		"[":  "左方括号",
-		"]":  "右方括号",
-		"{":  "左大括号",
-		"}":  "右大括号",
+		"@": "at",
+		"#": "井号",
+		"$": "美元",
+		"%": "百分号",
+		"^": "上标",
+		"&": "和",
+		"*": "星号",
+		"+": "加号",
+		"=": "等号",
+		"|": "竖线",
+		"~": "波浪号",
+		"`": "反引号",
+		"<": "小于号",
+		">": "大于号",
+		"[": "左方括号",
+		"]": "右方括号",
+		"{": "左大括号",
+		"}": "右大括号",
 	}
 
 	// 只替换独立的符号，避免破坏有意义的文本
@@ -171,23 +171,23 @@ func (tp *TextProcessor) processSpecialSymbols(text string) string {
 func (tp *TextProcessor) isInSpecialContext(text, symbol, match string) bool {
 	// 检查常见的特殊上下文模式
 	specialPatterns := []string{
-		`\w+@\w+\.\w+`,           // 邮箱地址
-		`https?://[^\s]+`,        // 网址
-		`\$\d+`,                  // 价格（美元）
-		`\d+%`,                   // 百分比
-		`\d+\.\d+`,               // 小数
-		`#[a-zA-Z_]\w*`,          // 编程中的标识符
-		`\*+[^*]*\*+`,            // 被星号包围的文本
-		`\+\d+(-\d+)*`,           // 电话号码
+		`\w+@\w+\.\w+`,               // 邮箱地址
+		`https?://[^\s]+`,            // 网址
+		`\$\d+`,                      // 价格（美元）
+		`\d+%`,                       // 百分比
+		`\d+\.\d+`,                   // 小数
+		`#[a-zA-Z_]\w*`,              // 编程中的标识符
+		`\*+[^*]*\*+`,                // 被星号包围的文本
+		`\+\d+(-\d+)*`,               // 电话号码
 		`[a-zA-Z0-9]+\.[a-zA-Z0-9]+`, // 域名或文件扩展名
 	}
-	
+
 	for _, pattern := range specialPatterns {
 		if matched, _ := regexp.MatchString(pattern, text); matched {
 			return true
 		}
 	}
-	
+
 	return false
 }
 
@@ -207,18 +207,18 @@ func (tp *TextProcessor) normalizeWhitespaceText(text string) string {
 func (tp *TextProcessor) processMixedLanguageText(text string) string {
 	var result strings.Builder
 	runes := []rune(text)
-	
+
 	for i, r := range runes {
 		// 检查当前字符类型
 		isChinese := tp.isChinese(r)
 		isEnglish := tp.isEnglish(r)
-		
+
 		// 在中英文之间添加适当的停顿
 		if i > 0 {
 			prevR := runes[i-1]
 			prevIsChinese := tp.isChinese(prevR)
 			prevIsEnglish := tp.isEnglish(prevR)
-			
+
 			// 中文后跟英文，或英文后跟中文时，确保有空格分隔
 			if (prevIsChinese && isEnglish) || (prevIsEnglish && isChinese) {
 				if result.Len() > 0 && !unicode.IsSpace(prevR) {
@@ -226,10 +226,10 @@ func (tp *TextProcessor) processMixedLanguageText(text string) string {
 				}
 			}
 		}
-		
+
 		result.WriteRune(r)
 	}
-	
+
 	return result.String()
 }
 
@@ -237,15 +237,15 @@ func (tp *TextProcessor) processMixedLanguageText(text string) string {
 func (tp *TextProcessor) processBrackets(text string) string {
 	// 处理括号内容，为TTS添加适当的语调标记
 	bracketPatterns := map[string][2]string{
-		`（([^）]+）)`: {"（", "）"}, // 中文括号
-		`\(([^)]+)\)`: {"(", ")"},   // 英文括号
-		`【([^】]+】)`: {"【", "】"}, // 中文方括号
-		`\[([^\]]+)\]`: {"[", "]"}, // 英文方括号
-		`《([^》]+》)`: {"《", "》"}, // 中文书名号
-		`"([^"]+")`:   {"\"", "\""}, // 中文双引号
-		`'([^']+')`:   {"'", "'"}, // 中文单引号
-		`"([^"]+)"`:   {"\"", "\""}, // 英文双引号
-		`'([^']+)'`:   {"'", "'"}, // 英文单引号
+		`（([^）]+）)`:    {"（", "）"},   // 中文括号
+		`\(([^)]+)\)`:  {"(", ")"},   // 英文括号
+		`【([^】]+】)`:    {"【", "】"},   // 中文方括号
+		`\[([^\]]+)\]`: {"[", "]"},   // 英文方括号
+		`《([^》]+》)`:    {"《", "》"},   // 中文书名号
+		`"([^"]+")`:    {"\"", "\""}, // 中文双引号
+		`'([^']+')`:    {"'", "'"},   // 中文单引号
+		`"([^"]+)"`:    {"\"", "\""}, // 英文双引号
+		`'([^']+)'`:    {"'", "'"},   // 英文单引号
 	}
 
 	for pattern := range bracketPatterns {
@@ -272,22 +272,22 @@ func (tp *TextProcessor) isEnglish(r rune) bool {
 // IsValidTextForTTS 检查文本是否适合TTS处理
 func (tp *TextProcessor) IsValidTextForTTS(text string) bool {
 	text = strings.TrimSpace(text)
-	
+
 	// 空文本
 	if text == "" {
 		return false
 	}
-	
+
 	// 纯标记行（如 ###、**、-----）
 	if tp.isPureMarkupLine(text) {
 		return false
 	}
-	
+
 	// 太短的文本（少于2个字符）
 	if len([]rune(text)) < 2 {
 		return false
 	}
-	
+
 	// 检查是否包含有效内容（至少有一个字母、数字或中文字符）
 	hasValidContent := false
 	for _, r := range text {
@@ -296,36 +296,36 @@ func (tp *TextProcessor) IsValidTextForTTS(text string) bool {
 			break
 		}
 	}
-	
+
 	return hasValidContent
 }
 
 // isPureMarkupLine 检查是否为纯标记行
 func (tp *TextProcessor) isPureMarkupLine(text string) bool {
 	text = strings.TrimSpace(text)
-	
+
 	// 检查各种标记格式
 	markupPatterns := []string{
-		`^#+\s*$`,           // 纯井号
-		`^\*+\s*$`,          // 纯星号
-		`^-+\s*$`,           // 纯破折号
-		`^=+\s*$`,           // 纯等号
-		`^_+\s*$`,           // 纯下划线
-		`^#+[^a-zA-Z\p{Han}]*$`, // 井号加非字母内容
+		`^#+\s*$`,                   // 纯井号
+		`^\*+\s*$`,                  // 纯星号
+		`^-+\s*$`,                   // 纯破折号
+		`^=+\s*$`,                   // 纯等号
+		`^_+\s*$`,                   // 纯下划线
+		`^#+[^a-zA-Z\p{Han}]*$`,     // 井号加非字母内容
 		`^\*{3,}[^a-zA-Z\p{Han}]*$`, // 三个或更多星号加非字母内容
 		`^-{3,}[^a-zA-Z\p{Han}]*$`,  // 三个或更多破折号加非字母内容
-		`^##.*$`,            // 以 ## 开头的行（Markdown 标题）
-		`^\*\*\(.*$`,        // 以 **( 开头的行（格式化说明）
-		`^---.*$`,           // 以 --- 开头的行（分割线）
-		`^-----.*$`,         // 以 ----- 开头的行（分割线）
+		`^##.*$`,                    // 以 ## 开头的行（Markdown 标题）
+		`^\*\*\(.*$`,                // 以 **( 开头的行（格式化说明）
+		`^---.*$`,                   // 以 --- 开头的行（分割线）
+		`^-----.*$`,                 // 以 ----- 开头的行（分割线）
 	}
-	
+
 	for _, pattern := range markupPatterns {
 		if matched, _ := regexp.MatchString(pattern, text); matched {
 			return true
 		}
 	}
-	
+
 	return false
 }
 
