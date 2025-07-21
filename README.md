@@ -48,6 +48,13 @@ echo "欢迎使用TTS应用，这是一个完全免费的语音合成工具" > t
 
 # 立即开始转换（配置文件会自动创建）
 ./tts_app edge -i test.txt
+
+# 智能Markdown模式（推荐用于.md文件）
+./tts_app edge -i document.md --smart-markdown -o output
+
+# 传统模式（用于纯文本文件）
+./tts_app edge -i document.txt -o output
+
 ```
 
 ### 方式三：腾讯云TTS（企业用户）

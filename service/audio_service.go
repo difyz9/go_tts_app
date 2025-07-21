@@ -107,12 +107,22 @@ func (ams *AudioMergeService) ProcessHistoryFile() error {
 	audioFiles := make([]string, 0, len(lines))
 	validLineCount := 0
 	skippedLineCount := 0
+	emptyLineCount := 0
+	invalidTextCount := 0
 
 	for i, line := range lines {
 		trimmedLine := strings.TrimSpace(line)
+		
+		// 跳过完全空行
 		if trimmedLine == "" {
-			skippedLineCount++
-			continue // 跳过空行
+			emptyLineCount++
+			continue
+		}
+
+		// 跳过只包含空白字符的行
+		if len(strings.ReplaceAll(strings.ReplaceAll(trimmedLine, " ", ""), "\t", "")) == 0 {
+			emptyLineCount++
+			continue
 		}
 
 		// 快速过滤明显的标记行（仅针对行首的标记）
@@ -134,24 +144,35 @@ func (ams *AudioMergeService) ProcessHistoryFile() error {
 
 		// 使用文本处理器进行详细预处理和验证
 		if !ams.textProcessor.IsValidTextForTTS(line) {
-			skippedLineCount++
+			invalidTextCount++
 			continue // 跳过无效行
 		}
 
 		// 处理文本以优化TTS效果
 		processedText := ams.textProcessor.ProcessText(line)
 		if processedText == "" {
-			skippedLineCount++
+			invalidTextCount++
 			continue
 		}
 
 		validLineCount++
 		fmt.Printf("正在处理第 %d 行: %s\n", i+1, processedText)
-		audioFile, err := ams.generateAudioForText(processedText, i)
+		
+		// 使用重试机制生成音频
+		audioFile, err := ams.generateAudioWithRetry(processedText, i, 3)
 		if err != nil {
-			fmt.Printf("生成第 %d 行音频失败: %v\n", i+1, err)
+			fmt.Printf("生成第 %d 行音频失败（经过重试）: %v\n", i+1, err)
 			continue
 		}
+		
+		// 验证生成的音频文件
+		if err := ams.validateAudioFile(audioFile); err != nil {
+			fmt.Printf("第 %d 行音频文件验证失败: %v\n", i+1, err)
+			// 删除无效的音频文件
+			os.Remove(audioFile)
+			continue
+		}
+		
 		audioFiles = append(audioFiles, audioFile)
 	}
 
@@ -159,7 +180,8 @@ func (ams *AudioMergeService) ProcessHistoryFile() error {
 		return fmt.Errorf("没有成功生成任何音频文件")
 	}
 
-	fmt.Printf("文本处理统计: 总行数=%d, 有效行数=%d, 跳过行数=%d\n", len(lines), validLineCount, skippedLineCount)
+	fmt.Printf("📊 文本处理统计: 总行数=%d, 空行=%d, 标记行=%d, 无效文本=%d, 成功生成=%d\n", 
+		len(lines), emptyLineCount, skippedLineCount, invalidTextCount, len(audioFiles))
 
 	// 合并音频文件
 	return ams.mergeAudioFiles(audioFiles)
@@ -452,4 +474,84 @@ func (ams *AudioMergeService) simpleAudioMerge(listFile, outputPath string) erro
 
 	fmt.Printf("音频合并完成: %s\n", outputPath)
 	return nil
+}
+
+// validateAudioFile 验证音频文件的有效性
+func (ams *AudioMergeService) validateAudioFile(audioPath string) error {
+	// 检查文件是否存在
+	fileInfo, err := os.Stat(audioPath)
+	if err != nil {
+		return fmt.Errorf("音频文件不存在: %v", err)
+	}
+
+	// 检查文件大小（音频文件通常至少几KB）
+	const minFileSize = 1024 // 最小1KB
+	if fileInfo.Size() < minFileSize {
+		return fmt.Errorf("音频文件过小 (%d bytes)，可能为空或损坏", fileInfo.Size())
+	}
+
+	// 检查文件是否可读
+	file, err := os.Open(audioPath)
+	if err != nil {
+		return fmt.Errorf("无法打开音频文件: %v", err)
+	}
+	defer file.Close()
+
+	// 根据配置的编码格式验证文件头部
+	codec := strings.ToLower(ams.config.TTS.Codec)
+	buffer := make([]byte, 12)
+	n, err := file.Read(buffer)
+	if err != nil || n < 4 {
+		return fmt.Errorf("无法读取音频文件头部")
+	}
+
+	// 验证不同格式的文件头
+	switch codec {
+	case "mp3":
+		// MP3文件头部验证
+		if n >= 3 && (string(buffer[:3]) == "ID3" || 
+			(buffer[0] == 0xFF && (buffer[1]&0xF0) == 0xF0)) {
+			fmt.Printf("  ✓ MP3音频文件验证通过: %s (%.2f KB)\n", audioPath, float64(fileInfo.Size())/1024)
+			return nil
+		}
+		return fmt.Errorf("音频文件格式无效，可能不是有效的MP3文件")
+	case "wav":
+		// WAV文件头部验证 (RIFF....WAVE)
+		if n >= 12 && string(buffer[:4]) == "RIFF" && string(buffer[8:12]) == "WAVE" {
+			fmt.Printf("  ✓ WAV音频文件验证通过: %s (%.2f KB)\n", audioPath, float64(fileInfo.Size())/1024)
+			return nil
+		}
+		return fmt.Errorf("音频文件格式无效，可能不是有效的WAV文件")
+	default:
+		// 对于其他格式，只检查大小
+		fmt.Printf("  ✓ 音频文件验证通过: %s (%.2f KB, %s格式)\n", audioPath, float64(fileInfo.Size())/1024, codec)
+		return nil
+	}
+}
+
+// generateAudioWithRetry 带重试机制的音频生成
+func (ams *AudioMergeService) generateAudioWithRetry(text string, index int, maxRetries int) (string, error) {
+	var lastErr error
+	
+	for attempt := 1; attempt <= maxRetries; attempt++ {
+		audioFile, err := ams.generateAudioForText(text, index)
+		if err == nil {
+			if attempt > 1 {
+				fmt.Printf("  ✓ 第 %d 行重试第 %d 次成功\n", index+1, attempt-1)
+			}
+			return audioFile, nil
+		}
+		
+		lastErr = err
+		fmt.Printf("  ✗ 第 %d 行第 %d 次尝试失败: %v\n", index+1, attempt, err)
+		
+		if attempt < maxRetries {
+			// 等待后重试，递增等待时间
+			waitTime := time.Duration(attempt) * 2 * time.Second
+			fmt.Printf("  ⏳ 第 %d 行等待 %v 后重试...\n", index+1, waitTime)
+			time.Sleep(waitTime)
+		}
+	}
+	
+	return "", fmt.Errorf("第 %d 行经过 %d 次重试后仍然失败，最后错误: %v", index+1, maxRetries, lastErr)
 }

@@ -51,6 +51,12 @@ func (amos *AudioMergeOnlyService) MergeAudioFiles(audioFiles []string, outputPa
 			continue
 		}
 
+		// 验证音频文件
+		if err := amos.validateSingleAudioFile(audioFile); err != nil {
+			fmt.Printf("⚠️  警告: 音频文件验证失败，跳过: %s, 错误: %v\n", audioFile, err)
+			continue
+		}
+
 		// 打开音频文件
 		inputFile, err := os.Open(audioFile)
 		if err != nil {
@@ -153,4 +159,70 @@ func (amos *AudioMergeOnlyService) ValidateAudioFiles(audioFiles []string) error
 	}
 
 	return nil
+}
+
+// validateSingleAudioFile 验证单个音频文件
+func (amos *AudioMergeOnlyService) validateSingleAudioFile(audioPath string) error {
+	// 检查文件是否存在
+	fileInfo, err := os.Stat(audioPath)
+	if err != nil {
+		return fmt.Errorf("音频文件不存在: %v", err)
+	}
+
+	// 检查文件大小
+	const minFileSize = 1024 // 最小1KB
+	if fileInfo.Size() < minFileSize {
+		return fmt.Errorf("音频文件过小 (%d bytes)，可能为空或损坏", fileInfo.Size())
+	}
+
+	// 检查文件是否可读
+	file, err := os.Open(audioPath)
+	if err != nil {
+		return fmt.Errorf("无法打开音频文件: %v", err)
+	}
+	defer file.Close()
+
+	// 读取文件头部进行基本格式验证
+	buffer := make([]byte, 12)
+	n, err := file.Read(buffer)
+	if err != nil || n < 4 {
+		return fmt.Errorf("无法读取音频文件头部")
+	}
+
+	// 获取文件扩展名
+	ext := strings.ToLower(filepath.Ext(audioPath))
+	
+	// 根据扩展名验证文件头部
+	switch ext {
+	case ".mp3":
+		if n >= 3 && (string(buffer[:3]) == "ID3" || 
+			(buffer[0] == 0xFF && (buffer[1]&0xF0) == 0xF0)) {
+			return nil
+		}
+		return fmt.Errorf("文件头部不匹配MP3格式")
+	case ".wav":
+		if n >= 12 && string(buffer[:4]) == "RIFF" && string(buffer[8:12]) == "WAVE" {
+			return nil
+		}
+		return fmt.Errorf("文件头部不匹配WAV格式")
+	case ".m4a", ".aac":
+		// M4A/AAC文件通常以ftyp开头（在前8字节后）
+		if n >= 8 {
+			return nil // 简化验证，只检查大小
+		}
+		return fmt.Errorf("文件头部读取不足")
+	case ".flac":
+		if n >= 4 && string(buffer[:4]) == "fLaC" {
+			return nil
+		}
+		return fmt.Errorf("文件头部不匹配FLAC格式")
+	case ".ogg":
+		if n >= 4 && string(buffer[:4]) == "OggS" {
+			return nil
+		}
+		return fmt.Errorf("文件头部不匹配OGG格式")
+	default:
+		// 对于未知格式，只检查是否为空文件
+		return nil
+	}
 }

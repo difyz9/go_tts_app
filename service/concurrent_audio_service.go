@@ -77,13 +77,23 @@ func (cas *ConcurrentAudioService) ProcessInputFileConcurrent() error {
 	// 创建任务列表
 	tasks := make([]TTSTask, 0, len(lines))
 	validLineCount := 0
-	skippedLineCount := 0
+	emptyLineCount := 0
+	markdownLineCount := 0
+	invalidTextCount := 0
 
 	for i, line := range lines {
 		trimmedLine := strings.TrimSpace(line)
+		
+		// 跳过完全空行
 		if trimmedLine == "" {
-			skippedLineCount++
-			continue // 跳过空行
+			emptyLineCount++
+			continue
+		}
+
+		// 跳过只包含空白字符的行
+		if len(strings.ReplaceAll(strings.ReplaceAll(trimmedLine, " ", ""), "\t", "")) == 0 {
+			emptyLineCount++
+			continue
 		}
 
 		// 快速过滤明显的标记行（仅针对行首的标记）
@@ -99,20 +109,20 @@ func (cas *ConcurrentAudioService) ProcessInputFileConcurrent() error {
 			trimmedLine == "***" ||
 			strings.HasPrefix(trimmedLine, "-- ") ||
 			strings.HasPrefix(trimmedLine, "-----") {
-			skippedLineCount++
+			markdownLineCount++
 			continue // 跳过标记行
 		}
 
 		// 使用文本处理器进行详细预处理和验证
 		if !cas.textProcessor.IsValidTextForTTS(line) {
-			skippedLineCount++
+			invalidTextCount++
 			continue // 跳过无效行
 		}
 
 		// 处理文本以优化TTS效果
 		processedText := cas.textProcessor.ProcessText(line)
 		if processedText == "" {
-			skippedLineCount++
+			invalidTextCount++
 			continue
 		}
 
@@ -124,7 +134,8 @@ func (cas *ConcurrentAudioService) ProcessInputFileConcurrent() error {
 		return fmt.Errorf("没有有效的文本行需要处理")
 	}
 
-	fmt.Printf("文本处理统计: 总行数=%d, 有效行数=%d, 跳过行数=%d\n", len(lines), validLineCount, skippedLineCount)
+	fmt.Printf("📊 文本处理统计: 总行数=%d, 空行=%d, 标记行=%d, 无效文本=%d, 有效任务=%d\n", 
+		len(lines), emptyLineCount, markdownLineCount, invalidTextCount, len(tasks))
 
 	// 并发处理任务
 	results, err := cas.processTTSTasksConcurrent(tasks)
@@ -222,8 +233,8 @@ func (cas *ConcurrentAudioService) worker(ctx context.Context, workerID int, tas
 
 		fmt.Printf("Worker %d 处理任务 %d: %s\n", workerID, task.Index, task.Text)
 
-		// 处理TTS任务
-		audioFile, err := cas.generateAudioForText(task.Text, task.Index)
+		// 处理TTS任务，带重试机制
+		audioFile, err := cas.generateAudioWithRetry(task.Text, task.Index, 3)
 
 		resultChan <- TTSResult{
 			Index:     task.Index,
@@ -290,6 +301,13 @@ func (cas *ConcurrentAudioService) generateAudioForText(text string, index int) 
 	err = cas.downloadAudio(audioURL, audioFile)
 	if err != nil {
 		return "", err
+	}
+
+	// 验证下载的音频文件
+	if err := cas.validateAudioFile(audioFile); err != nil {
+		// 删除无效的音频文件
+		os.Remove(audioFile)
+		return "", fmt.Errorf("音频文件验证失败: %v", err)
 	}
 
 	return audioFile, nil
@@ -360,13 +378,36 @@ func (cas *ConcurrentAudioService) downloadAudio(url, filepath string) error {
 func (cas *ConcurrentAudioService) mergeAudioFiles(audioFiles []string) error {
 	fmt.Printf("\n开始合并 %d 个音频文件...\n", len(audioFiles))
 
+	// 预先验证所有音频文件
+	validAudioFiles := []string{}
+	invalidCount := 0
+	
+	for _, audioFile := range audioFiles {
+		if err := cas.validateAudioFile(audioFile); err != nil {
+			fmt.Printf("⚠️  跳过无效音频文件: %s, 原因: %v\n", audioFile, err)
+			invalidCount++
+			// 删除无效文件
+			os.Remove(audioFile)
+			continue
+		}
+		validAudioFiles = append(validAudioFiles, audioFile)
+	}
+
+	if len(validAudioFiles) == 0 {
+		return fmt.Errorf("没有有效的音频文件可以合并")
+	}
+
+	if invalidCount > 0 {
+		fmt.Printf("📊 音频文件验证统计: 有效 %d, 无效 %d\n", len(validAudioFiles), invalidCount)
+	}
+
 	outputPath := filepath.Join(cas.config.Audio.OutputDir, cas.config.Audio.FinalOutput)
 
 	// 创建一个临时的文件列表
 	listFile := filepath.Join(cas.config.Audio.TempDir, "file_list.txt")
 
-	// 写入文件列表
-	err := cas.createFileList(audioFiles, listFile)
+	// 写入文件列表（使用验证过的音频文件）
+	err := cas.createFileList(validAudioFiles, listFile)
 	if err != nil {
 		return err
 	}
@@ -449,4 +490,84 @@ func (cas *ConcurrentAudioService) simpleAudioMerge(listFile, outputPath string)
 
 	fmt.Printf("音频合并完成: %s\n", outputPath)
 	return nil
+}
+
+// validateAudioFile 验证音频文件的有效性
+func (cas *ConcurrentAudioService) validateAudioFile(audioPath string) error {
+	// 检查文件是否存在
+	fileInfo, err := os.Stat(audioPath)
+	if err != nil {
+		return fmt.Errorf("音频文件不存在: %v", err)
+	}
+
+	// 检查文件大小（音频文件通常至少几KB）
+	const minFileSize = 1024 // 最小1KB
+	if fileInfo.Size() < minFileSize {
+		return fmt.Errorf("音频文件过小 (%d bytes)，可能为空或损坏", fileInfo.Size())
+	}
+
+	// 检查文件是否可读
+	file, err := os.Open(audioPath)
+	if err != nil {
+		return fmt.Errorf("无法打开音频文件: %v", err)
+	}
+	defer file.Close()
+
+	// 根据配置的编码格式验证文件头部
+	codec := strings.ToLower(cas.config.TTS.Codec)
+	buffer := make([]byte, 12)
+	n, err := file.Read(buffer)
+	if err != nil || n < 4 {
+		return fmt.Errorf("无法读取音频文件头部")
+	}
+
+	// 验证不同格式的文件头
+	switch codec {
+	case "mp3":
+		// MP3文件头部验证
+		if n >= 3 && (string(buffer[:3]) == "ID3" || 
+			(buffer[0] == 0xFF && (buffer[1]&0xF0) == 0xF0)) {
+			fmt.Printf("  ✓ MP3音频文件验证通过: %s (%.2f KB)\n", audioPath, float64(fileInfo.Size())/1024)
+			return nil
+		}
+		return fmt.Errorf("音频文件格式无效，可能不是有效的MP3文件")
+	case "wav":
+		// WAV文件头部验证 (RIFF....WAVE)
+		if n >= 12 && string(buffer[:4]) == "RIFF" && string(buffer[8:12]) == "WAVE" {
+			fmt.Printf("  ✓ WAV音频文件验证通过: %s (%.2f KB)\n", audioPath, float64(fileInfo.Size())/1024)
+			return nil
+		}
+		return fmt.Errorf("音频文件格式无效，可能不是有效的WAV文件")
+	default:
+		// 对于其他格式，只检查大小
+		fmt.Printf("  ✓ 音频文件验证通过: %s (%.2f KB, %s格式)\n", audioPath, float64(fileInfo.Size())/1024, codec)
+		return nil
+	}
+}
+
+// generateAudioWithRetry 带重试机制的音频生成
+func (cas *ConcurrentAudioService) generateAudioWithRetry(text string, index int, maxRetries int) (string, error) {
+	var lastErr error
+	
+	for attempt := 1; attempt <= maxRetries; attempt++ {
+		audioFile, err := cas.generateAudioForText(text, index)
+		if err == nil {
+			if attempt > 1 {
+				fmt.Printf("  ✓ 任务 %d 重试第 %d 次成功\n", index, attempt-1)
+			}
+			return audioFile, nil
+		}
+		
+		lastErr = err
+		fmt.Printf("  ✗ 任务 %d 第 %d 次尝试失败: %v\n", index, attempt, err)
+		
+		if attempt < maxRetries {
+			// 等待后重试，递增等待时间
+			waitTime := time.Duration(attempt) * 2 * time.Second
+			fmt.Printf("  ⏳ 任务 %d 等待 %v 后重试...\n", index, waitTime)
+			time.Sleep(waitTime)
+		}
+	}
+	
+	return "", fmt.Errorf("任务 %d 经过 %d 次重试后仍然失败，最后错误: %v", index, maxRetries, lastErr)
 }

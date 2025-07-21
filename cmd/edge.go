@@ -20,6 +20,7 @@ var edgeVoice string
 var edgeRate string
 var edgeVolume string
 var edgePitch string
+var smartMarkdown bool // 新增：智能Markdown模式
 
 // edgeCmd represents the edge command
 var edgeCmd = &cobra.Command{
@@ -39,7 +40,12 @@ Edge TTS是免费的，无需API密钥，支持多种语言和音色。
   tts_app edge --list zh                          # 列出中文语音
   tts_app edge --list en                          # 列出英文语音
   tts_app edge --voice zh-CN-YunyangNeural        # 使用指定语音
-  tts_app edge --rate +20% --volume +10%          # 调整语速和音量`,
+  tts_app edge --rate +20% --volume +10%          # 调整语速和音量
+  # 智能Markdown模式（推荐用于.md文件）
+  tts_app edge -i document.md --smart-markdown -o output
+  # 传统模式（用于纯文本文件）
+  tts_app edge -i document.txt -o output
+  `,
 	Run: func(cmd *cobra.Command, args []string) {
 		err := runEdgeTTS()
 		if err != nil {
@@ -142,12 +148,27 @@ func runEdgeTTS() error {
 	fmt.Printf("- 语速: %s\n", rate)
 	fmt.Printf("- 音量: %s\n", volume)
 	fmt.Printf("- 音调: %s\n", pitch)
+	
+	// 显示处理模式
+	if smartMarkdown {
+		fmt.Printf("- 处理模式: 智能Markdown模式（blackfriday解析）\n")
+	} else {
+		fmt.Printf("- 处理模式: 传统逐行模式\n")
+	}
 	fmt.Println()
 
-	// 默认使用并发处理模式
-	fmt.Println("开始并发处理文本文件（Edge TTS）...")
+	// 创建Edge TTS服务
 	edgeService := service.NewEdgeTTSService(config)
-	err = edgeService.ProcessInputFileConcurrent()
+	
+	// 根据模式选择处理方法
+	if smartMarkdown {
+		fmt.Println("开始智能Markdown处理（Edge TTS）...")
+		err = edgeService.ProcessMarkdownFile(config.InputFile, config.Audio.OutputDir)
+	} else {
+		fmt.Println("开始并发处理文本文件（Edge TTS）...")
+		err = edgeService.ProcessInputFileConcurrent()
+	}
+	
 	if err != nil {
 		return fmt.Errorf("处理文件失败: %v", err)
 	}
@@ -177,4 +198,7 @@ func init() {
 	edgeCmd.Flags().StringVar(&edgeRate, "rate", "", "语速 (如: +20%, -10%)")
 	edgeCmd.Flags().StringVar(&edgeVolume, "volume", "", "音量 (如: +10%, -20%)")
 	edgeCmd.Flags().StringVar(&edgePitch, "pitch", "", "音调 (如: +10Hz, -5Hz)")
+	
+	// 添加智能Markdown处理标志
+	edgeCmd.Flags().BoolVar(&smartMarkdown, "smart-markdown", false, "启用智能Markdown处理模式（推荐用于.md文件）")
 }
