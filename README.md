@@ -3,7 +3,7 @@
 [![Go Version](https://img.shields.io/badge/Go-1.23+-blue.svg)](https://golang.org)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Build Status](https://github.com/difyz9/markdown2tts/workflows/Build/badge.svg)](https://github.com/difyz9/markdown2tts/actions)
-[![Release](https://img.shields.io/github/release/difyz9/go-tts-app.svg)](https://github.com/difyz9/markdown2tts/releases)
+[![Release](https://img.shields.io/github/release/difyz9/markdown2tts.svg)](https://github.com/difyz9/markdown2tts/releases)
 
 一个功能完整、高性能的文本转语音(TTS)应用程序，支持**双引擎**、**并发处理**、**智能过滤**等特色功能。
 
@@ -22,6 +22,7 @@
 ### 🔧 **智能特性**
 - **智能文本过滤** - 自动跳过空行、标记行、短文本 
 - **特殊字符处理** - 智能处理Markdown格式、转义字符、中英文混合等
+- **自动Markdown检测** - 检测.md文件自动启用智能处理模式
 - **灵活配置管理** - 支持配置文件和命令行参数
 - **多格式支持** - 支持MP3、WAV等多种音频格式
 - **跨平台支持** - Windows、macOS、Linux全平台兼容
@@ -31,14 +32,14 @@
 ### 方式一：一键初始化（推荐新用户）
 ```bash
 # 下载并解压最新版本
-wget https://github.com/difyz9/markdown2tts/releases/latest/download/tts_app_linux_amd64.tar.gz
-tar -xzf tts_app_linux_amd64.tar.gz
+wget https://github.com/difyz9/markdown2tts/releases/latest/download/markdown2tts_linux_amd64.tar.gz
+tar -xzf markdown2tts_linux_amd64.tar.gz
 
 # 初始化配置文件和示例文件
-./tts_app init
+./markdown2tts init
 
 # 立即开始转换（完全免费）
-./tts_app edge -i input.txt
+./markdown2tts edge -i input.txt
 ```
 
 ### 方式二：Edge TTS（免费，无需配置）
@@ -47,26 +48,30 @@ tar -xzf tts_app_linux_amd64.tar.gz
 echo "欢迎使用TTS应用，这是一个完全免费的语音合成工具" > test.txt
 
 # 立即开始转换（配置文件会自动创建）
-./tts_app edge -i test.txt
+./markdown2tts edge -i test.txt
+
+# 智能Markdown模式（自动检测.md文件）
+echo "# 标题\n这是一段测试文本。" > test.md
+./markdown2tts edge -i test.md  # 自动启用智能Markdown处理
 
 # 智能Markdown模式（推荐用于.md文件）
-./tts_app edge -i document.md --smart-markdown -o output
+./markdown2tts edge -i document.md --smart-markdown -o output
 
 # 传统模式（用于纯文本文件）
-./tts_app edge -i document.txt -o output
+./markdown2tts edge -i document.txt -o output
 
 ```
 
 ### 方式三：腾讯云TTS（企业用户）
 ```bash
 # 初始化配置
-./tts_app init
+./markdown2tts init
 
 # 编辑 config.yaml，填入腾讯云密钥
 nano config.yaml
 
 # 使用腾讯云TTS
-./tts_app tts -i input.txt
+./markdown2tts tts -i input.txt
 ```
 
 ## 📋 命令详解
@@ -74,37 +79,37 @@ nano config.yaml
 ### Edge TTS 命令（免费推荐）
 ```bash
 # 基本使用
-./tts_app edge                              # 使用默认配置
-./tts_app edge -i input.txt                 # 指定输入文件
-./tts_app edge -i input.txt -o output/      # 指定输出目录
+./markdown2tts edge                              # 使用默认配置
+./markdown2tts edge -i input.txt                 # 指定输入文件
+./markdown2tts edge -i input.txt -o output/      # 指定输出目录
 
 # 查看可用语音
-./tts_app edge --list-all                   # 显示所有语音（322个）
-./tts_app edge --list zh                    # 显示中文语音（14个）
-./tts_app edge --list en                    # 显示英文语音（47个）
+./markdown2tts edge --list-all                   # 显示所有语音（322个）
+./markdown2tts edge --list zh                    # 显示中文语音（14个）
+./markdown2tts edge --list en                    # 显示英文语音（47个）
 
 # 自定义语音参数
-./tts_app edge --voice zh-CN-YunyangNeural          # 使用男声
-./tts_app edge --voice zh-CN-XiaoyiNeural           # 使用女声
-./tts_app edge --rate +20% --volume +10%            # 调整语速和音量
-./tts_app edge --voice zh-CN-YunyangNeural --rate +15% --volume +5% --pitch +5Hz  # 完整自定义
+./markdown2tts edge --voice zh-CN-YunyangNeural          # 使用男声
+./markdown2tts edge --voice zh-CN-XiaoyiNeural           # 使用女声
+./markdown2tts edge --rate +20% --volume +10%            # 调整语速和音量
+./markdown2tts edge --voice zh-CN-YunyangNeural --rate +15% --volume +5% --pitch +5Hz  # 完整自定义
 ```
 
 ### 腾讯云TTS 命令
 ```bash
 # 基本使用
-./tts_app tts                               # 使用默认配置
-./tts_app tts --config custom.yaml          # 使用自定义配置
-./tts_app tts -i input.txt -o output/       # 指定输入输出
+./markdown2tts tts                               # 使用默认配置
+./markdown2tts tts --config custom.yaml          # 使用自定义配置
+./markdown2tts tts -i input.txt -o output/       # 指定输入输出
 
 # 并发处理（默认开启）
-./tts_app tts --concurrent                  # 明确启用并发模式
+./markdown2tts tts --concurrent                  # 明确启用并发模式
 ```
 
 ### 音频合并命令
 ```bash
 # 合并音频文件
-./tts_app merge --input ./temp --output merged.mp3
+./markdown2tts merge --input ./temp --output merged.mp3
 
 ```
 
@@ -161,8 +166,8 @@ concurrent:
 
 ```bash
 # 首次运行任何命令时都会自动初始化
-./tts_app edge -i your_text.txt   # 自动创建 config.yaml 和 input.txt
-./tts_app tts -i your_text.txt    # 同样会自动初始化
+./markdown2tts edge -i your_text.txt   # 自动创建 config.yaml 和 input.txt
+./markdown2tts tts -i your_text.txt    # 同样会自动初始化
 ```
 
 ### 手动初始化
@@ -170,13 +175,13 @@ concurrent:
 
 ```bash
 # 基本初始化
-./tts_app init
+./markdown2tts init
 
 # 自定义文件名
-./tts_app init --config my_config.yaml --input my_input.txt
+./markdown2tts init --config my_config.yaml --input my_input.txt
 
 # 强制覆盖已存在的文件
-./tts_app init --force
+./markdown2tts init --force
 ```
 
 ### 初始化内容
@@ -270,27 +275,27 @@ cd markdown2tts
 go mod download
 
 # 构建项目
-go build -o tts_app
+go build -o markdown2tts
 
 # 运行测试
 go test ./...
 
 # 本地运行
-./tts_app edge --help
+./markdown2tts edge --help
 ```
 
 ### 交叉编译
 ```bash
 # Linux
-GOOS=linux GOARCH=amd64 go build -o tts_app_linux_amd64
-GOOS=linux GOARCH=arm64 go build -o tts_app_linux_arm64
+GOOS=linux GOARCH=amd64 go build -o markdown2tts_linux_amd64
+GOOS=linux GOARCH=arm64 go build -o markdown2tts_linux_arm64
 
 # Windows
-GOOS=windows GOARCH=amd64 go build -o tts_app_windows_amd64.exe
+GOOS=windows GOARCH=amd64 go build -o markdown2tts_windows_amd64.exe
 
 # macOS
-GOOS=darwin GOARCH=amd64 go build -o tts_app_darwin_amd64
-GOOS=darwin GOARCH=arm64 go build -o tts_app_darwin_arm64
+GOOS=darwin GOARCH=amd64 go build -o markdown2tts_darwin_amd64
+GOOS=darwin GOARCH=arm64 go build -o markdown2tts_darwin_arm64
 ```
 
 ## 🎵 音色示例

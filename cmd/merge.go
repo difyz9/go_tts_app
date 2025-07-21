@@ -35,8 +35,8 @@ var mergeCmd = &cobra.Command{
 支持的音频格式：mp3, wav, m4a等
 
 示例:
-  github.com/difyz9/markdown2tts merge --input ./temp --output merged.mp3
-  github.com/difyz9/markdown2tts merge --input ./audio_files --output final.wav`,
+  markdown2tts merge --input ./temp --output merged.mp3
+  markdown2tts merge --input ./audio_files --output final.wav`,
 	Run: func(cmd *cobra.Command, args []string) {
 		err := runMerge()
 		if err != nil {

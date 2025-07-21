@@ -571,3 +571,70 @@ func (cas *ConcurrentAudioService) generateAudioWithRetry(text string, index int
 
 	return "", fmt.Errorf("任务 %d 经过 %d 次重试后仍然失败，最后错误: %v", index, maxRetries, lastErr)
 }
+
+// ProcessMarkdownFileConcurrent 并发处理Markdown文件
+func (cas *ConcurrentAudioService) ProcessMarkdownFileConcurrent() error {
+	// 读取Markdown文件内容
+	content, err := os.ReadFile(cas.config.InputFile)
+	if err != nil {
+		return fmt.Errorf("读取Markdown文件失败: %v", err)
+	}
+
+	// 使用TextProcessor处理Markdown文档
+	if cas.textProcessor == nil {
+		cas.textProcessor = NewTextProcessor()
+	}
+	
+	// 处理Markdown文档，获取适合TTS的文本片段
+	processedTexts := cas.textProcessor.ProcessMarkdownDocument(string(content))
+	
+	if len(processedTexts) == 0 {
+		return fmt.Errorf("从Markdown文件中未提取到有效的文本内容")
+	}
+
+	fmt.Printf("📄 从Markdown文件中提取到 %d 个有效文本片段\n", len(processedTexts))
+
+	// 创建TTS任务
+	var tasks []TTSTask
+	for i, text := range processedTexts {
+		if text != "" {
+			tasks = append(tasks, TTSTask{
+				Index: i + 1,
+				Text:  text,
+			})
+		}
+	}
+
+	if len(tasks) == 0 {
+		return fmt.Errorf("没有有效的文本任务需要处理")
+	}
+
+	fmt.Printf("🎯 总共创建 %d 个TTS任务\n", len(tasks))
+
+	// 并发处理TTS任务
+	results, err := cas.processTTSTasksConcurrent(tasks)
+	if err != nil {
+		return fmt.Errorf("并发处理TTS任务失败: %v", err)
+	}
+
+	// 收集成功的音频文件
+	var audioFiles []string
+	for _, result := range results {
+		if result.Error == nil && result.AudioFile != "" {
+			audioFiles = append(audioFiles, result.AudioFile)
+		}
+	}
+
+	if len(audioFiles) == 0 {
+		return fmt.Errorf("没有成功生成任何音频文件")
+	}
+
+	fmt.Printf("🎵 成功生成 %d 个音频文件\n", len(audioFiles))
+
+	// 合并音频文件
+	if err := cas.mergeAudioFiles(audioFiles); err != nil {
+		return fmt.Errorf("合并音频文件失败: %v", err)
+	}
+
+	return nil
+}

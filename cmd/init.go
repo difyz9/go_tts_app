@@ -27,10 +27,10 @@ var initCmd = &cobra.Command{
 如果文件已存在，默认会跳过。使用 --force 强制覆盖。
 
 示例:
-  github.com/difyz9/markdown2tts init                           # 使用默认文件名初始化
-  github.com/difyz9/markdown2tts init --config custom.yaml     # 指定配置文件名
-  github.com/difyz9/markdown2tts init --input my_input.txt      # 指定输入文件名
-  github.com/difyz9/markdown2tts init --force                   # 强制覆盖已存在的文件`,
+  markdown2tts init                           # 使用默认文件名初始化
+  markdown2tts init --config custom.yaml     # 指定配置文件名
+  markdown2tts init --input my_input.txt      # 指定输入文件名
+  markdown2tts init --force                   # 强制覆盖已存在的文件`,
 	Run: func(cmd *cobra.Command, args []string) {
 		err := runInit()
 		if err != nil {

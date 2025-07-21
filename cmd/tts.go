@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"github.com/difyz9/markdown2tts/service"
 	"path/filepath"
+	"strings"
 
 	"github.com/spf13/cobra"
 )
@@ -14,6 +15,7 @@ import (
 var configFile string
 var inputFile string
 var outputDir string
+var ttsSmartMarkdown bool // 新增：智能Markdown模式
 
 // ttsCmd represents the tts command
 var ttsCmd = &cobra.Command{
@@ -22,26 +24,24 @@ var ttsCmd = &cobra.Command{
 	Long: `使用腾讯云TTS服务将文本文件转换为语音，并自动合并成一个音频文件。
 
 默认启用并发处理模式，自动加载配置文件，操作简单快捷。
+当输入文件为Markdown格式（.md或.markdown）时，自动启用智能Markdown处理模式。
 
 示例:
-  github.com/difyz9/markdown2tts tts                                    # 使用默认配置
-  github.com/difyz9/markdown2tts tts -i input.txt                       # 指定输入文件
-  github.com/difyz9/markdown2tts tts -i input.txt -o /path/to/output   # 指定输入和输出
-  github.com/difyz9/markdown2tts tts --config custom.yaml              # 使用自定义配置
-  # 智能Markdown模式（推荐用于.md文件）
-  github.com/difyz9/markdown2tts edge -i document.md --smart-markdown -o output
-  # 传统模式（用于纯文本文件）
-  github.com/difyz9/markdown2tts edge -i document.txt -o output
+  markdown2tts tts                                    # 使用默认配置
+  markdown2tts tts -i input.txt                       # 指定输入文件
+  markdown2tts tts -i document.md                     # 自动启用智能Markdown模式
+  markdown2tts tts -i input.txt -o /path/to/output   # 指定输入和输出
+  markdown2tts tts --config custom.yaml              # 使用自定义配置
   `,
 	Run: func(cmd *cobra.Command, args []string) {
-		err := runTTS()
+		err := runTTS(cmd)
 		if err != nil {
 			fmt.Printf("错误: %v\n", err)
 		}
 	},
 }
 
-func runTTS() error {
+func runTTS(cmd *cobra.Command) error {
 	// 如果没有指定配置文件，尝试默认位置
 	if configFile == "" {
 		configFile = "config.yaml"
@@ -58,6 +58,17 @@ func runTTS() error {
 	// 如果指定了输入文件，覆盖配置
 	if inputFile != "" {
 		config.InputFile = inputFile
+		
+		// 自动检测markdown文件并启用智能处理模式（仅当用户未明确设置smart-markdown标志时）
+		ext := strings.ToLower(filepath.Ext(inputFile))
+		if (ext == ".md" || ext == ".markdown") {
+			// 检查用户是否明确设置了smart-markdown标志
+			smartMarkdownSet := cmd.Flags().Changed("smart-markdown")
+			if !smartMarkdownSet {
+				ttsSmartMarkdown = true
+				fmt.Printf("🔍 检测到Markdown文件，自动启用智能Markdown处理模式\n")
+			}
+		}
 	}
 
 	// 如果指定了输出目录，覆盖配置
@@ -108,12 +119,27 @@ func runTTS() error {
 	fmt.Printf("- 并发模式: 开启（默认）\n")
 	fmt.Printf("- 最大并发数: %d\n", config.Concurrent.MaxWorkers)
 	fmt.Printf("- 速率限制: %d次/秒\n", config.Concurrent.RateLimit)
+	
+	// 显示处理模式
+	if ttsSmartMarkdown {
+		fmt.Printf("- 处理模式: 智能Markdown模式（blackfriday解析）\n")
+	} else {
+		fmt.Printf("- 处理模式: 传统逐行模式\n")
+	}
 	fmt.Println()
 
 	// 默认使用并发处理模式
-	fmt.Println("开始并发处理文本文件...")
 	concurrentAudioService := service.NewConcurrentAudioService(config, ttsService)
-	err = concurrentAudioService.ProcessInputFileConcurrent()
+	
+	// 根据模式选择处理方法
+	if ttsSmartMarkdown {
+		fmt.Println("开始智能Markdown处理（腾讯云TTS）...")
+		err = concurrentAudioService.ProcessMarkdownFileConcurrent()
+	} else {
+		fmt.Println("开始并发处理文本文件（腾讯云TTS）...")
+		err = concurrentAudioService.ProcessInputFileConcurrent()
+	}
+	
 	if err != nil {
 		return fmt.Errorf("处理文件失败: %v", err)
 	}
@@ -133,4 +159,7 @@ func init() {
 
 	// 添加输出目录标志
 	ttsCmd.Flags().StringVarP(&outputDir, "output", "o", "", "输出目录路径（默认为./output）")
+
+	// 添加智能Markdown处理标志
+	ttsCmd.Flags().BoolVar(&ttsSmartMarkdown, "smart-markdown", false, "启用智能Markdown处理模式（推荐用于.md文件）")
 }

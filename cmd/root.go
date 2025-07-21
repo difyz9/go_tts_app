@@ -31,7 +31,7 @@ func SetVersionInfo(version, buildTime, gitCommit string) {
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
-	Use:   "github.com/difyz9/markdown2tts",
+	Use:   "markdown2tts",
 	Short: "🎵 TTS语音合成应用 - 支持双引擎、并发处理的高性能文本转语音工具",
 	Long: `🎵 TTS语音合成应用
 
@@ -47,18 +47,16 @@ var rootCmd = &cobra.Command{
 
 🚀 快速开始：
   # 初始化配置（新用户）
-  github.com/difyz9/markdown2tts init
+  markdown2tts init
   
   # 免费转换（推荐）
-  github.com/difyz9/markdown2tts edge -i input.txt
+  markdown2tts edge -i input.txt
   
   # 企业用户
-  github.com/difyz9/markdown2tts tts -i input.txt
+  markdown2tts tts -i input.txt
   
   # 查看语音选项  
-  github.com/difyz9/markdown2tts edge --list zh
-
-📚 更多信息：https://github.com/yourusername/go-tts-app`,
+  markdown2tts edge --list zh📚 更多信息：https://github.com/difyz9/markdown2tts`,
 	Version: getVersionString(),
 }
 

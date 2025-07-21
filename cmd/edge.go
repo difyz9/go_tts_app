@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"github.com/difyz9/markdown2tts/service"
 	"path/filepath"
+	"strings"
 
 	"github.com/spf13/cobra"
 )
@@ -20,7 +21,7 @@ var edgeVoice string
 var edgeRate string
 var edgeVolume string
 var edgePitch string
-var smartMarkdown bool // 新增：智能Markdown模式
+var edgeSmartMarkdown bool // 新增：智能Markdown模式
 
 // edgeCmd represents the edge command
 var edgeCmd = &cobra.Command{
@@ -30,31 +31,30 @@ var edgeCmd = &cobra.Command{
 
 默认启用并发处理模式，自动加载配置文件，操作简单快捷。
 Edge TTS是免费的，无需API密钥，支持多种语言和音色。
+当输入文件为Markdown格式（.md或.markdown）时，自动启用智能Markdown处理模式。
 
 示例:
-  github.com/difyz9/markdown2tts edge                                    # 使用默认配置
-  github.com/difyz9/markdown2tts edge -i input.txt                       # 指定输入文件
-  github.com/difyz9/markdown2tts edge -i input.txt -o /path/to/output   # 指定输入和输出
-  github.com/difyz9/markdown2tts edge --config custom.yaml              # 使用自定义配置
-  github.com/difyz9/markdown2tts edge --list-all                         # 列出所有可用语音
-  github.com/difyz9/markdown2tts edge --list zh                          # 列出中文语音
-  github.com/difyz9/markdown2tts edge --list en                          # 列出英文语音
-  github.com/difyz9/markdown2tts edge --voice zh-CN-YunyangNeural        # 使用指定语音
-  github.com/difyz9/markdown2tts edge --rate +20% --volume +10%          # 调整语速和音量
-  # 智能Markdown模式（推荐用于.md文件）
-  github.com/difyz9/markdown2tts edge -i document.md --smart-markdown -o output
-  # 传统模式（用于纯文本文件）
-  github.com/difyz9/markdown2tts edge -i document.txt -o output
+  markdown2tts edge                                    # 使用默认配置
+  markdown2tts edge -i input.txt                       # 指定输入文件
+  markdown2tts edge -i document.md                     # 自动启用智能Markdown模式
+  markdown2tts edge -i input.txt -o /path/to/output   # 指定输入和输出
+  markdown2tts edge --config custom.yaml              # 使用自定义配置
+  markdown2tts edge --list-all                         # 列出所有可用语音
+  markdown2tts edge --list zh                          # 列出中文语音
+  markdown2tts edge --list en                          # 列出英文语音
+  markdown2tts edge --voice zh-CN-YunyangNeural      # 使用指定语音
+  markdown2tts edge --rate +20% --volume +10%        # 调整语速和音量
+
   `,
 	Run: func(cmd *cobra.Command, args []string) {
-		err := runEdgeTTS()
+		err := runEdgeTTS(cmd)
 		if err != nil {
 			fmt.Printf("错误: %v\n", err)
 		}
 	},
 }
 
-func runEdgeTTS() error {
+func runEdgeTTS(cmd *cobra.Command) error {
 	// 如果是列出语音模式，直接执行并返回
 	if listAllVoices || listVoices != "" {
 		if listAllVoices {
@@ -79,6 +79,17 @@ func runEdgeTTS() error {
 	// 如果指定了输入文件，覆盖配置
 	if edgeInputFile != "" {
 		config.InputFile = edgeInputFile
+		
+		// 自动检测markdown文件并启用智能处理模式（仅当用户未明确设置smart-markdown标志时）
+		ext := strings.ToLower(filepath.Ext(edgeInputFile))
+		if (ext == ".md" || ext == ".markdown") {
+			// 检查用户是否明确设置了smart-markdown标志
+			smartMarkdownSet := cmd.Flags().Changed("smart-markdown")
+			if !smartMarkdownSet {
+				edgeSmartMarkdown = true
+				fmt.Printf("🔍 检测到Markdown文件，自动启用智能Markdown处理模式\n")
+			}
+		}
 	}
 
 	// 如果指定了输出目录，覆盖配置
@@ -150,7 +161,7 @@ func runEdgeTTS() error {
 	fmt.Printf("- 音调: %s\n", pitch)
 
 	// 显示处理模式
-	if smartMarkdown {
+	if edgeSmartMarkdown {
 		fmt.Printf("- 处理模式: 智能Markdown模式（blackfriday解析）\n")
 	} else {
 		fmt.Printf("- 处理模式: 传统逐行模式\n")
@@ -161,7 +172,7 @@ func runEdgeTTS() error {
 	edgeService := service.NewEdgeTTSService(config)
 
 	// 根据模式选择处理方法
-	if smartMarkdown {
+	if edgeSmartMarkdown {
 		fmt.Println("开始智能Markdown处理（Edge TTS）...")
 		err = edgeService.ProcessMarkdownFile(config.InputFile, config.Audio.OutputDir)
 	} else {
@@ -200,5 +211,5 @@ func init() {
 	edgeCmd.Flags().StringVar(&edgePitch, "pitch", "", "音调 (如: +10Hz, -5Hz)")
 
 	// 添加智能Markdown处理标志
-	edgeCmd.Flags().BoolVar(&smartMarkdown, "smart-markdown", false, "启用智能Markdown处理模式（推荐用于.md文件）")
+	edgeCmd.Flags().BoolVar(&edgeSmartMarkdown, "smart-markdown", false, "启用智能Markdown处理模式（推荐用于.md文件）")
 }

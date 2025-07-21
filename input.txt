@@ -1,0 +1,20 @@
+欢迎使用TTS语音合成应用！
+
+这是一个功能强大的文本转语音工具。
+支持腾讯云TTS和Microsoft Edge TTS两种引擎。
+Edge TTS完全免费，无需API密钥。
+
+特殊字符处理示例：
+**代理（Agents）**能基于用户输入自主决策执行流程。
+\*\*转义字符\*\*也能正确处理。
+AI Agent可以automatically处理various任务。
+
+符号测试：！@#$%^&*()
+括号测试：（中文括号）和(English brackets)
+
+请编辑此文件，添加您要转换的文本内容。
+每行文本将被转换为一个音频片段，最后自动合并。
+
+开始使用：
+1. 免费版本：./github.com/difyz9/markdown2tts edge -i input.txt
+2. 腾讯云版本：./github.com/difyz9/markdown2tts tts -i input.txt

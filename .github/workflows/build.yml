@@ -91,9 +91,9 @@ jobs:
       run: |
         mkdir -p dist
         if [ "$GOOS" = "windows" ]; then
-          BINARY_NAME="tts_app_${GOOS}_${GOARCH}.exe"
+          BINARY_NAME="markdown2tts_${GOOS}_${GOARCH}.exe"
         else
-          BINARY_NAME="tts_app_${GOOS}_${GOARCH}"
+          BINARY_NAME="markdown2tts_${GOOS}_${GOARCH}"
         fi
         go build -ldflags="-s -w" -o "dist/$BINARY_NAME" .
         
@@ -138,22 +138,22 @@ jobs:
           ## 🎉 Release ${{ github.ref_name }}
           
           ### 📥 下载说明
-          - **Linux AMD64**: `tts_app_linux_amd64.tar.gz`
-          - **Linux ARM64**: `tts_app_linux_arm64.tar.gz`
-          - **Windows AMD64**: `tts_app_windows_amd64.zip`
-          - **macOS Intel**: `tts_app_darwin_amd64.tar.gz`
-          - **macOS Apple Silicon**: `tts_app_darwin_arm64.tar.gz`
+          - **Linux AMD64**: `markdown2tts_linux_amd64.tar.gz`
+          - **Linux ARM64**: `markdown2tts_linux_arm64.tar.gz`
+          - **Windows AMD64**: `markdown2tts_windows_amd64.zip`
+          - **macOS Intel**: `markdown2tts_darwin_amd64.tar.gz`
+          - **macOS Apple Silicon**: `markdown2tts_darwin_arm64.tar.gz`
           
           ### 🚀 快速开始
           ```bash
           # 下载并解压（以Linux AMD64为例）
-          wget https://github.com/${{ github.repository }}/releases/download/${{ github.ref_name }}/tts_app_linux_amd64.tar.gz
-          tar -xzf tts_app_linux_amd64.tar.gz
-          chmod +x tts_app_linux_amd64
+          wget https://github.com/${{ github.repository }}/releases/download/${{ github.ref_name }}/markdown2tts_linux_amd64.tar.gz
+          tar -xzf markdown2tts_linux_amd64.tar.gz
+          chmod +x markdown2tts_linux_amd64
           
           # 立即开始使用（免费）
           echo "欢迎使用TTS应用" > test.txt
-          ./tts_app_linux_amd64 edge -i test.txt
+          ./markdown2tts_linux_amd64 edge -i test.txt
           ```
           
           ### ✨ 主要特性

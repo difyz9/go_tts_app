@@ -10,22 +10,22 @@
 
 ```bash
 # Linux AMD64
-wget https://github.com/difyz9/markdown2tts/releases/latest/download/github.com/difyz9/markdown2tts_linux_amd64.tar.gz
-tar -xzf github.com/difyz9/markdown2tts_linux_amd64.tar.gz
-chmod +x github.com/difyz9/markdown2tts_linux_amd64
+wget https://github.com/difyz9/markdown2tts/releases/latest/download/markdown2tts_linux_amd64.tar.gz
+tar -xzf markdown2tts_linux_amd64.tar.gz
+chmod +x markdown2tts
 
 # macOS Intel
-wget https://github.com/difyz9/markdown2tts/releases/latest/download/github.com/difyz9/markdown2tts_darwin_amd64.tar.gz
-tar -xzf github.com/difyz9/markdown2tts_darwin_amd64.tar.gz
-chmod +x github.com/difyz9/markdown2tts_darwin_amd64
+wget https://github.com/difyz9/markdown2tts/releases/latest/download/markdown2tts_darwin_amd64.tar.gz
+tar -xzf markdown2tts_darwin_amd64.tar.gz
+chmod +x markdown2tts
 
 # macOS Apple Silicon  
-wget https://github.com/difyz9/markdown2tts/releases/latest/download/github.com/difyz9/markdown2tts_darwin_arm64.tar.gz
-tar -xzf github.com/difyz9/markdown2tts_darwin_arm64.tar.gz
-chmod +x github.com/difyz9/markdown2tts_darwin_arm64
+wget https://github.com/difyz9/markdown2tts/releases/latest/download/markdown2tts_darwin_arm64.tar.gz
+tar -xzf markdown2tts_darwin_arm64.tar.gz
+chmod +x markdown2tts
 
 # Windows
-# 下载 github.com/difyz9/markdown2tts_windows_amd64.zip 并解压
+# 下载 markdown2tts_windows_amd64.zip 并解压
 ```
 
 ### 方式二：从源码编译

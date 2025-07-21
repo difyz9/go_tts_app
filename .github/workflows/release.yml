@@ -52,7 +52,7 @@ jobs:
         GOARCH: ${{ matrix.goarch }}
         CGO_ENABLED: 0
       run: |
-        BINARY_NAME="tts_app_${{ matrix.goos }}_${{ matrix.goarch }}${{ matrix.suffix }}"
+        BINARY_NAME="markdown2tts_${{ matrix.goos }}_${{ matrix.goarch }}${{ matrix.suffix }}"
         go build -ldflags="-s -w -X main.version=${{ github.ref_name }}" -o "$BINARY_NAME" .
         
         # Create release package
@@ -73,6 +73,6 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
-        ASSET_PATH="./tts_app_${{ matrix.goos }}_${{ matrix.goarch }}${{ matrix.goos == 'windows' && '.zip' || '.tar.gz' }}"
-        ASSET_NAME="tts_app_${{ matrix.goos }}_${{ matrix.goarch }}${{ matrix.goos == 'windows' && '.zip' || '.tar.gz' }}"
+        ASSET_PATH="./markdown2tts_${{ matrix.goos }}_${{ matrix.goarch }}${{ matrix.goos == 'windows' && '.zip' || '.tar.gz' }}"
+        ASSET_NAME="markdown2tts_${{ matrix.goos }}_${{ matrix.goarch }}${{ matrix.goos == 'windows' && '.zip' || '.tar.gz' }}"
         gh release upload ${{ github.ref_name }} "$ASSET_PATH" --name "$ASSET_NAME"
