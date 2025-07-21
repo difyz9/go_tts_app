@@ -17,7 +17,7 @@ RUN go mod download
 COPY . .
 
 # 构建应用
-RUN CGO_ENABLED=0 GOOS=linux go build -ldflags="-s -w" -o tts_app .
+RUN CGO_ENABLED=0 GOOS=linux go build -ldflags="-s -w" -o github.com/difyz9/markdown2tts .
 
 # 最终镜像 - 运行阶段
 FROM alpine:latest
@@ -33,7 +33,7 @@ RUN addgroup -g 1001 -S tts && \
 WORKDIR /app
 
 # 从构建阶段复制二进制文件
-COPY --from=builder /app/tts_app .
+COPY --from=builder /app/github.com/difyz9/markdown2tts .
 
 # 复制配置文件模板
 COPY config.yaml ./config.yaml.example
@@ -55,16 +55,16 @@ ENV TTS_OUTPUT_DIR=/app/output
 
 # 健康检查
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-    CMD ./tts_app --help || exit 1
+    CMD ./github.com/difyz9/markdown2tts --help || exit 1
 
 # 默认命令
-ENTRYPOINT ["./tts_app"]
+ENTRYPOINT ["./github.com/difyz9/markdown2tts"]
 CMD ["edge", "--help"]
 
 # 元数据标签
 LABEL maintainer="your-email@example.com"
 LABEL description="TTS语音合成应用 - 支持腾讯云TTS和Edge TTS"
 LABEL version="1.0.0"
-LABEL org.opencontainers.image.source="https://github.com/difyz9/go-tts-app"
+LABEL org.opencontainers.image.source="https://github.com/difyz9/markdown2tts"
 LABEL org.opencontainers.image.description="高性能TTS语音合成应用，支持双引擎、并发处理"
 LABEL org.opencontainers.image.licenses="MIT"

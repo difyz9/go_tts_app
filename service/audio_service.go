@@ -10,7 +10,7 @@ import (
 	"strconv"
 	"strings"
 	"time"
-	"tts_app/model"
+	"github.com/difyz9/markdown2tts/model"
 
 	"gopkg.in/yaml.v3"
 )

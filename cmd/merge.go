@@ -11,7 +11,7 @@ import (
 	"sort"
 	"strconv"
 	"strings"
-	"tts_app/service"
+	"github.com/difyz9/markdown2tts/service"
 
 	"github.com/spf13/cobra"
 )
@@ -35,8 +35,8 @@ var mergeCmd = &cobra.Command{
 支持的音频格式：mp3, wav, m4a等
 
 示例:
-  tts_app merge --input ./temp --output merged.mp3
-  tts_app merge --input ./audio_files --output final.wav`,
+  github.com/difyz9/markdown2tts merge --input ./temp --output merged.mp3
+  github.com/difyz9/markdown2tts merge --input ./audio_files --output final.wav`,
 	Run: func(cmd *cobra.Command, args []string) {
 		err := runMerge()
 		if err != nil {

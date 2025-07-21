@@ -6,7 +6,7 @@ package cmd
 import (
 	"fmt"
 	"path/filepath"
-	"tts_app/service"
+	"github.com/difyz9/markdown2tts/service"
 
 	"github.com/spf13/cobra"
 )
@@ -24,14 +24,14 @@ var ttsCmd = &cobra.Command{
 默认启用并发处理模式，自动加载配置文件，操作简单快捷。
 
 示例:
-  tts_app tts                                    # 使用默认配置
-  tts_app tts -i input.txt                       # 指定输入文件
-  tts_app tts -i input.txt -o /path/to/output   # 指定输入和输出
-  tts_app tts --config custom.yaml              # 使用自定义配置
+  github.com/difyz9/markdown2tts tts                                    # 使用默认配置
+  github.com/difyz9/markdown2tts tts -i input.txt                       # 指定输入文件
+  github.com/difyz9/markdown2tts tts -i input.txt -o /path/to/output   # 指定输入和输出
+  github.com/difyz9/markdown2tts tts --config custom.yaml              # 使用自定义配置
   # 智能Markdown模式（推荐用于.md文件）
-  tts_app edge -i document.md --smart-markdown -o output
+  github.com/difyz9/markdown2tts edge -i document.md --smart-markdown -o output
   # 传统模式（用于纯文本文件）
-  tts_app edge -i document.txt -o output
+  github.com/difyz9/markdown2tts edge -i document.txt -o output
   `,
 	Run: func(cmd *cobra.Command, args []string) {
 		err := runTTS()

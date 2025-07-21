@@ -112,7 +112,7 @@ textProcessor.SetOptions(
 
 ```bash
 # 测试特殊字符处理
-./tts_app tts -i test_special_chars.txt -o output_special
+./github.com/difyz9/markdown2tts tts -i test_special_chars.txt -o output_special
 
 # 查看处理统计
 # 输出会显示：文本处理统计: 总行数=X, 有效行数=Y, 跳过行数=Z

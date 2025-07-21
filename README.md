@@ -2,8 +2,8 @@
 
 [![Go Version](https://img.shields.io/badge/Go-1.23+-blue.svg)](https://golang.org)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Build Status](https://github.com/difyz9/go-tts-app/workflows/Build/badge.svg)](https://github.com/difyz9/go-tts-app/actions)
-[![Release](https://img.shields.io/github/release/difyz9/go-tts-app.svg)](https://github.com/difyz9/go-tts-app/releases)
+[![Build Status](https://github.com/difyz9/markdown2tts/workflows/Build/badge.svg)](https://github.com/difyz9/markdown2tts/actions)
+[![Release](https://img.shields.io/github/release/difyz9/go-tts-app.svg)](https://github.com/difyz9/markdown2tts/releases)
 
 一个功能完整、高性能的文本转语音(TTS)应用程序，支持**双引擎**、**并发处理**、**智能过滤**等特色功能。
 
@@ -31,7 +31,7 @@
 ### 方式一：一键初始化（推荐新用户）
 ```bash
 # 下载并解压最新版本
-wget https://github.com/difyz9/go-tts-app/releases/latest/download/tts_app_linux_amd64.tar.gz
+wget https://github.com/difyz9/markdown2tts/releases/latest/download/tts_app_linux_amd64.tar.gz
 tar -xzf tts_app_linux_amd64.tar.gz
 
 # 初始化配置文件和示例文件
@@ -263,7 +263,7 @@ go-tts-app/
 ### 本地开发
 ```bash
 # 克隆项目
-git clone https://github.com/difyz9/go-tts-app.git
+git clone https://github.com/difyz9/markdown2tts.git
 cd go-tts-app
 
 # 安装依赖
@@ -349,10 +349,10 @@ GOOS=darwin GOARCH=arm64 go build -o tts_app_darwin_arm64
 
 ## 📞 支持与反馈
 
-- 🐛 [报告Bug](https://github.com/difyz9/go-tts-app/issues/new?template=bug_report.md)
-- 💡 [功能建议](https://github.com/difyz9/go-tts-app/issues/new?template=feature_request.md)
-- 📖 [查看文档](https://github.com/difyz9/go-tts-app/wiki)
-- 💬 [讨论交流](https://github.com/difyz9/go-tts-app/discussions)
+- 🐛 [报告Bug](https://github.com/difyz9/markdown2tts/issues/new?template=bug_report.md)
+- 💡 [功能建议](https://github.com/difyz9/markdown2tts/issues/new?template=feature_request.md)
+- 📖 [查看文档](https://github.com/difyz9/markdown2tts/wiki)
+- 💬 [讨论交流](https://github.com/difyz9/markdown2tts/discussions)
 
 ## 📈 项目状态
 

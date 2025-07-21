@@ -1,7 +1,7 @@
 # TTS应用Makefile
 
 # 项目信息
-PROJECT_NAME := tts_app
+PROJECT_NAME := github.com/difyz9/markdown2tts
 VERSION ?= dev
 BUILD_TIME := $(shell date -u '+%Y-%m-%d_%H:%M:%S')
 GIT_COMMIT := $(shell git rev-parse --short HEAD 2>/dev/null || echo "unknown")

@@ -7,19 +7,19 @@
 #### 最简单的使用方式
 ```bash
 # 默认使用ai_history.txt作为输入，输出到./output目录
-./tts_app tts
+./github.com/difyz9/markdown2tts tts
 ```
 
 #### 指定输入文件
 ```bash
 # 指定要转换的文本文件
-./tts_app tts -i my_text.txt
+./github.com/difyz9/markdown2tts tts -i my_text.txt
 ```
 
 #### 指定输出目录
 ```bash
 # 指定输出目录
-./tts_app tts -i my_text.txt -o /path/to/output
+./github.com/difyz9/markdown2tts tts -i my_text.txt -o /path/to/output
 ```
 
 ### Edge TTS（免费，无需API密钥）
@@ -27,52 +27,52 @@
 #### 最简单的使用方式
 ```bash
 # 使用免费的Microsoft Edge TTS服务
-./tts_app edge
+./github.com/difyz9/markdown2tts edge
 ```
 
 #### 指定输入文件
 ```bash
 # 指定要转换的文本文件
-./tts_app edge -i my_text.txt
+./github.com/difyz9/markdown2tts edge -i my_text.txt
 ```
 
 #### 指定输出目录
 ```bash
 # 指定输出目录
-./tts_app edge -i my_text.txt -o /path/to/output
+./github.com/difyz9/markdown2tts edge -i my_text.txt -o /path/to/output
 ```
 
 #### 查看可用语音
 ```bash
 # 列出所有可用语音
-./tts_app edge --list
+./github.com/difyz9/markdown2tts edge --list
 
 # 只显示中文语音
-./tts_app edge --list zh
+./github.com/difyz9/markdown2tts edge --list zh
 
 # 只显示英文语音
-./tts_app edge --list en
+./github.com/difyz9/markdown2tts edge --list en
 ```
 
 #### 自定义语音参数
 ```bash
 # 使用指定语音
-./tts_app edge -i input.txt --voice zh-CN-YunyangNeural
+./github.com/difyz9/markdown2tts edge -i input.txt --voice zh-CN-YunyangNeural
 
 # 调整语速和音量
-./tts_app edge -i input.txt --rate +20% --volume +10%
+./github.com/difyz9/markdown2tts edge -i input.txt --rate +20% --volume +10%
 
 # 完整自定义
-./tts_app edge -i input.txt --voice zh-CN-YunyangNeural --rate +20% --volume +10% --pitch +5Hz
+./github.com/difyz9/markdown2tts edge -i input.txt --voice zh-CN-YunyangNeural --rate +20% --volume +10% --pitch +5Hz
 ```
 
 ### 使用自定义配置文件
 ```bash
 # 腾讯云TTS使用自定义配置文件
-./tts_app tts --config custom_config.yaml
+./github.com/difyz9/markdown2tts tts --config custom_config.yaml
 
 # Edge TTS使用自定义配置文件
-./tts_app edge --config custom_config.yaml
+./github.com/difyz9/markdown2tts edge --config custom_config.yaml
 ```
 
 ## 功能特点
@@ -148,26 +148,26 @@ Edge TTS使用相同的配置文件，但不需要API凭证：
 
 ```bash
 # 腾讯云TTS基本使用
-./tts_app tts
+./github.com/difyz9/markdown2tts tts
 
 # Edge TTS基本使用（推荐）
-./tts_app edge
+./github.com/difyz9/markdown2tts edge
 
 # 转换特定文件到特定目录
-./tts_app edge -i article.txt -o podcast/
+./github.com/difyz9/markdown2tts edge -i article.txt -o podcast/
 
 # 使用腾讯云TTS的自定义配置
-./tts_app tts --config production.yaml -i script.txt -o final/
+./github.com/difyz9/markdown2tts tts --config production.yaml -i script.txt -o final/
 
 # 使用Edge TTS（免费）
-./tts_app edge -i chinese_text.txt -o voice_output/
+./github.com/difyz9/markdown2tts edge -i chinese_text.txt -o voice_output/
 ```
 
 ## 推荐使用方式
 
-**新用户推荐**: 使用 `./tts_app edge` 命令，完全免费，无需配置。
+**新用户推荐**: 使用 `./github.com/difyz9/markdown2tts edge` 命令，完全免费，无需配置。
 
-**企业用户**: 使用 `./tts_app tts` 命令，支持更多音色选择和参数调节。
+**企业用户**: 使用 `./github.com/difyz9/markdown2tts tts` 命令，支持更多音色选择和参数调节。
 
 ## 处理结果示例
 

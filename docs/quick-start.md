@@ -6,35 +6,35 @@
 
 ### 方式一：下载预编译版本（推荐）
 
-访问 [Releases页面](https://github.com/difyz9/go-tts-app/releases) 下载适合您系统的版本：
+访问 [Releases页面](https://github.com/difyz9/markdown2tts/releases) 下载适合您系统的版本：
 
 ```bash
 # Linux AMD64
-wget https://github.com/difyz9/go-tts-app/releases/latest/download/tts_app_linux_amd64.tar.gz
-tar -xzf tts_app_linux_amd64.tar.gz
-chmod +x tts_app_linux_amd64
+wget https://github.com/difyz9/markdown2tts/releases/latest/download/github.com/difyz9/markdown2tts_linux_amd64.tar.gz
+tar -xzf github.com/difyz9/markdown2tts_linux_amd64.tar.gz
+chmod +x github.com/difyz9/markdown2tts_linux_amd64
 
 # macOS Intel
-wget https://github.com/difyz9/go-tts-app/releases/latest/download/tts_app_darwin_amd64.tar.gz
-tar -xzf tts_app_darwin_amd64.tar.gz
-chmod +x tts_app_darwin_amd64
+wget https://github.com/difyz9/markdown2tts/releases/latest/download/github.com/difyz9/markdown2tts_darwin_amd64.tar.gz
+tar -xzf github.com/difyz9/markdown2tts_darwin_amd64.tar.gz
+chmod +x github.com/difyz9/markdown2tts_darwin_amd64
 
 # macOS Apple Silicon  
-wget https://github.com/difyz9/go-tts-app/releases/latest/download/tts_app_darwin_arm64.tar.gz
-tar -xzf tts_app_darwin_arm64.tar.gz
-chmod +x tts_app_darwin_arm64
+wget https://github.com/difyz9/markdown2tts/releases/latest/download/github.com/difyz9/markdown2tts_darwin_arm64.tar.gz
+tar -xzf github.com/difyz9/markdown2tts_darwin_arm64.tar.gz
+chmod +x github.com/difyz9/markdown2tts_darwin_arm64
 
 # Windows
-# 下载 tts_app_windows_amd64.zip 并解压
+# 下载 github.com/difyz9/markdown2tts_windows_amd64.zip 并解压
 ```
 
 ### 方式二：从源码编译
 
 ```bash
 # 需要Go 1.23+
-git clone https://github.com/difyz9/go-tts-app.git
+git clone https://github.com/difyz9/markdown2tts.git
 cd go-tts-app
-go build -o tts_app
+go build -o github.com/difyz9/markdown2tts
 ```
 
 ## 📝 第二步：准备文本文件
@@ -57,16 +57,16 @@ EOF
 
 ```bash
 # 最简单的使用方式 - 完全免费！
-./tts_app edge -i test.txt
+./github.com/difyz9/markdown2tts edge -i test.txt
 
 # 指定输出目录
-./tts_app edge -i test.txt -o my_output/
+./github.com/difyz9/markdown2tts edge -i test.txt -o my_output/
 
 # 使用男声
-./tts_app edge -i test.txt --voice zh-CN-YunyangNeural
+./github.com/difyz9/markdown2tts edge -i test.txt --voice zh-CN-YunyangNeural
 
 # 调整语速和音量
-./tts_app edge -i test.txt --rate +20% --volume +10%
+./github.com/difyz9/markdown2tts edge -i test.txt --rate +20% --volume +10%
 ```
 
 ### 使用腾讯云TTS（需要API密钥）
@@ -79,7 +79,7 @@ cp config.yaml.example config.yaml
 # vim config.yaml 或使用其他编辑器
 
 # 3. 运行转换
-./tts_app tts -i test.txt
+./github.com/difyz9/markdown2tts tts -i test.txt
 ```
 
 ## 📂 第四步：查看结果
@@ -103,20 +103,20 @@ ls output/
 
 ```bash
 # 查看所有Edge TTS语音
-./tts_app edge --list-all
+./github.com/difyz9/markdown2tts edge --list-all
 
 # 只看中文语音
-./tts_app edge --list zh
+./github.com/difyz9/markdown2tts edge --list zh
 
 # 只看英文语音  
-./tts_app edge --list en
+./github.com/difyz9/markdown2tts edge --list en
 ```
 
 ### 自定义语音参数
 
 ```bash
 # 完整的自定义示例
-./tts_app edge -i test.txt \
+./github.com/difyz9/markdown2tts edge -i test.txt \
   --voice zh-CN-XiaoyiNeural \
   --rate +15% \
   --volume +5% \
@@ -128,7 +128,7 @@ ls output/
 
 ```bash
 # 如果您已有音频文件需要合并
-./tts_app merge --input ./audio_files --output final.mp3
+./github.com/difyz9/markdown2tts merge --input ./audio_files --output final.mp3
 ```
 
 ## 🔧 配置文件详解
@@ -174,7 +174,7 @@ cat > long_article.txt << EOF
 第三段内容...
 EOF
 
-./tts_app edge -i long_article.txt
+./github.com/difyz9/markdown2tts edge -i long_article.txt
 ```
 
 ### 2. 批量处理文件
@@ -182,7 +182,7 @@ EOF
 ```bash
 # 处理多个文件
 for file in *.txt; do
-  ./tts_app edge -i "$file" -o "output_${file%.txt}/"
+  ./github.com/difyz9/markdown2tts edge -i "$file" -o "output_${file%.txt}/"
 done
 ```
 
@@ -191,11 +191,11 @@ done
 ```bash
 # 英文文本
 echo "Hello, welcome to TTS application" > english.txt
-./tts_app edge -i english.txt --voice en-US-JennyNeural
+./github.com/difyz9/markdown2tts edge -i english.txt --voice en-US-JennyNeural
 
 # 日文文本
 echo "こんにちは、TTSアプリケーションへようこそ" > japanese.txt  
-./tts_app edge -i japanese.txt --voice ja-JP-NanamiNeural
+./github.com/difyz9/markdown2tts edge -i japanese.txt --voice ja-JP-NanamiNeural
 ```
 
 ## 🚨 常见问题
@@ -215,8 +215,8 @@ A: Edge TTS需要网络连接，请检查：
 ### Q: 想要更多音色？
 A: 使用命令查看：
 ```bash
-./tts_app edge --list-all    # 查看所有322个音色
-./tts_app edge --list zh     # 查看14个中文音色
+./github.com/difyz9/markdown2tts edge --list-all    # 查看所有322个音色
+./github.com/difyz9/markdown2tts edge --list zh     # 查看14个中文音色
 ```
 
 ### Q: 如何处理大文件？
@@ -232,14 +232,14 @@ A: 应用会自动：
 1. 📚 阅读[完整用户手册](../README.md)
 2. 🔧 学习[高级配置](advanced-config.md)
 3. 🤝 查看[贡献指南](../CONTRIBUTING.md)
-4. 💬 加入[社区讨论](https://github.com/difyz9/go-tts-app/discussions)
+4. 💬 加入[社区讨论](https://github.com/difyz9/markdown2tts/discussions)
 
 ## 🆘 需要帮助？
 
-- 🐛 [报告Bug](https://github.com/difyz9/go-tts-app/issues/new?template=bug_report.md)
-- 💡 [功能请求](https://github.com/difyz9/go-tts-app/issues/new?template=feature_request.md)  
-- ❓ [咨询问题](https://github.com/difyz9/go-tts-app/issues/new?template=question.md)
-- 💬 [社区讨论](https://github.com/difyz9/go-tts-app/discussions)
+- 🐛 [报告Bug](https://github.com/difyz9/markdown2tts/issues/new?template=bug_report.md)
+- 💡 [功能请求](https://github.com/difyz9/markdown2tts/issues/new?template=feature_request.md)  
+- ❓ [咨询问题](https://github.com/difyz9/markdown2tts/issues/new?template=question.md)
+- 💬 [社区讨论](https://github.com/difyz9/markdown2tts/discussions)
 
 ---
 

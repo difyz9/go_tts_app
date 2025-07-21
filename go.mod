@@ -1,4 +1,4 @@
-module tts_app
+module github.com/difyz9/markdown2tts
 
 go 1.23.4
 

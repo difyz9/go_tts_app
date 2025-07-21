@@ -22,7 +22,7 @@
    ```bash
    # 在GitHub上点击Fork按钮
    # 然后克隆你的fork
-   git clone https://github.com/difyz9/go-tts-app.git
+   git clone https://github.com/difyz9/markdown2tts.git
    cd go-tts-app
    ```
 
@@ -274,8 +274,8 @@ docs/       # 文档
 
 ### 交流渠道
 
-- 🐛 [GitHub Issues](https://github.com/difyz9/go-tts-app/issues) - Bug报告和功能请求
-- 💬 [GitHub Discussions](https://github.com/difyz9/go-tts-app/discussions) - 一般讨论
+- 🐛 [GitHub Issues](https://github.com/difyz9/markdown2tts/issues) - Bug报告和功能请求
+- 💬 [GitHub Discussions](https://github.com/difyz9/markdown2tts/discussions) - 一般讨论
 - 📧 Email: your-email@example.com
 
 ### 行为准则

@@ -48,10 +48,10 @@
 **使用方法**:
 ```bash
 # 传统模式（逐行处理）
-./tts_app edge -i document.md -o output
+./github.com/difyz9/markdown2tts edge -i document.md -o output
 
 # 智能Markdown模式（推荐）
-./tts_app edge -i document.md -o output --smart-markdown
+./github.com/difyz9/markdown2tts edge -i document.md -o output --smart-markdown
 ```
 
 ## 性能对比
@@ -107,13 +107,13 @@ Markdown文档 → blackfriday解析 → AST树 → TTSRenderer遍历 → 过滤
 ### 最佳实践
 ```bash
 # 处理技术博客、教程、API文档
-./tts_app edge -i technical-blog.md --smart-markdown -o blog-audio
+./github.com/difyz9/markdown2tts edge -i technical-blog.md --smart-markdown -o blog-audio
 
 # 处理包含代码示例的README文件
-./tts_app edge -i README.md --smart-markdown -o readme-audio
+./github.com/difyz9/markdown2tts edge -i README.md --smart-markdown -o readme-audio
 
 # 处理编程课程内容
-./tts_app edge -i course-content.md --smart-markdown -o course-audio
+./github.com/difyz9/markdown2tts edge -i course-content.md --smart-markdown -o course-audio
 ```
 
 ## 问题解决

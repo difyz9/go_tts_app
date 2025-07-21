@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
-	"tts_app/model"
+	"github.com/difyz9/markdown2tts/model"
 
 	"gopkg.in/yaml.v3"
 )
@@ -133,8 +133,8 @@ AI Agent可以automatically处理various任务。
 每行文本将被转换为一个音频片段，最后自动合并。
 
 开始使用：
-1. 免费版本：./tts_app edge -i input.txt
-2. 腾讯云版本：./tts_app tts -i input.txt
+1. 免费版本：./github.com/difyz9/markdown2tts edge -i input.txt
+2. 腾讯云版本：./github.com/difyz9/markdown2tts tts -i input.txt
 `
 
 	err := os.WriteFile(inputPath, []byte(sampleContent), 0644)
@@ -152,11 +152,11 @@ func (ci *ConfigInitializer) ShowQuickStart() {
 	fmt.Println("🚀 快速开始指南:")
 	fmt.Println()
 	fmt.Println("方式一：免费Edge TTS（推荐新手）")
-	fmt.Println("   ./tts_app edge -i input.txt")
+	fmt.Println("   ./github.com/difyz9/markdown2tts edge -i input.txt")
 	fmt.Println()
 	fmt.Println("方式二：腾讯云TTS（需要API密钥）")
 	fmt.Println("   1. 编辑 config.yaml，填入腾讯云密钥")
-	fmt.Println("   2. ./tts_app tts -i input.txt")
+	fmt.Println("   2. ./github.com/difyz9/markdown2tts tts -i input.txt")
 	fmt.Println()
 	fmt.Println("方式三：测试文本处理效果")
 	fmt.Println("   go run test_text_processor.go input.txt")

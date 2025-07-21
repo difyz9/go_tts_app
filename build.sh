@@ -13,7 +13,7 @@ BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
 # 项目信息
-PROJECT_NAME="tts_app"
+PROJECT_NAME="github.com/difyz9/markdown2tts"
 VERSION=${VERSION:-"dev"}
 BUILD_TIME=$(date -u '+%Y-%m-%d_%H:%M:%S')
 GIT_COMMIT=$(git rev-parse --short HEAD 2>/dev/null || echo "unknown")

@@ -5,7 +5,7 @@ package cmd
 
 import (
 	"fmt"
-	"tts_app/service"
+	"github.com/difyz9/markdown2tts/service"
 
 	"github.com/spf13/cobra"
 )
@@ -27,10 +27,10 @@ var initCmd = &cobra.Command{
 如果文件已存在，默认会跳过。使用 --force 强制覆盖。
 
 示例:
-  tts_app init                           # 使用默认文件名初始化
-  tts_app init --config custom.yaml     # 指定配置文件名
-  tts_app init --input my_input.txt      # 指定输入文件名
-  tts_app init --force                   # 强制覆盖已存在的文件`,
+  github.com/difyz9/markdown2tts init                           # 使用默认文件名初始化
+  github.com/difyz9/markdown2tts init --config custom.yaml     # 指定配置文件名
+  github.com/difyz9/markdown2tts init --input my_input.txt      # 指定输入文件名
+  github.com/difyz9/markdown2tts init --force                   # 强制覆盖已存在的文件`,
 	Run: func(cmd *cobra.Command, args []string) {
 		err := runInit()
 		if err != nil {
@@ -83,8 +83,8 @@ func runInit() error {
 	fmt.Printf("1. 编辑 %s 设置您的API密钥（可选，使用腾讯云TTS时需要）\n", initConfigFile)
 	fmt.Printf("2. 编辑 %s 添加要转换的文本\n", initInputFile)
 	fmt.Println("3. 运行 TTS 转换：")
-	fmt.Printf("   - 免费版本: ./tts_app edge -i %s\n", initInputFile)
-	fmt.Printf("   - 腾讯云版本: ./tts_app tts -i %s\n", initInputFile)
+	fmt.Printf("   - 免费版本: ./github.com/difyz9/markdown2tts edge -i %s\n", initInputFile)
+	fmt.Printf("   - 腾讯云版本: ./github.com/difyz9/markdown2tts tts -i %s\n", initInputFile)
 
 	return nil
 }

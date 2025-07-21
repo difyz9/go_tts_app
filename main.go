@@ -7,7 +7,7 @@ Copyright © 2025 TTS App Contributors
 package main
 
 import (
-	"tts_app/cmd"
+	"github.com/difyz9/markdown2tts/cmd"
 )
 
 // 版本信息，在编译时通过ldflags注入

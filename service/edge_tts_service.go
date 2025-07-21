@@ -11,7 +11,7 @@ import (
 	"sync"
 	"text/tabwriter"
 	"time"
-	"tts_app/model"
+	"github.com/difyz9/markdown2tts/model"
 
 	"github.com/difyz9/edge-tts-go/pkg/communicate"
 	"github.com/difyz9/edge-tts-go/pkg/types"
@@ -542,9 +542,9 @@ func ListEdgeVoices(languageFilter string) error {
 		exampleVoice := filteredVoices[0].ShortName
 		fmt.Printf("使用示例:\n")
 		fmt.Printf("  # 使用 %s 语音\n", exampleVoice)
-		fmt.Printf("  ./tts_app edge -i input.txt --voice %s\n", exampleVoice)
+		fmt.Printf("  ./github.com/difyz9/markdown2tts edge -i input.txt --voice %s\n", exampleVoice)
 		fmt.Printf("  # 调整语速和音量\n")
-		fmt.Printf("  ./tts_app edge -i input.txt --voice %s --rate +20%% --volume +10%%\n\n", exampleVoice)
+		fmt.Printf("  ./github.com/difyz9/markdown2tts edge -i input.txt --voice %s --rate +20%% --volume +10%%\n\n", exampleVoice)
 	}
 
 	return nil

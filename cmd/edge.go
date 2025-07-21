@@ -6,7 +6,7 @@ package cmd
 import (
 	"fmt"
 	"path/filepath"
-	"tts_app/service"
+	"github.com/difyz9/markdown2tts/service"
 
 	"github.com/spf13/cobra"
 )
@@ -32,19 +32,19 @@ var edgeCmd = &cobra.Command{
 Edge TTS是免费的，无需API密钥，支持多种语言和音色。
 
 示例:
-  tts_app edge                                    # 使用默认配置
-  tts_app edge -i input.txt                       # 指定输入文件
-  tts_app edge -i input.txt -o /path/to/output   # 指定输入和输出
-  tts_app edge --config custom.yaml              # 使用自定义配置
-  tts_app edge --list-all                         # 列出所有可用语音
-  tts_app edge --list zh                          # 列出中文语音
-  tts_app edge --list en                          # 列出英文语音
-  tts_app edge --voice zh-CN-YunyangNeural        # 使用指定语音
-  tts_app edge --rate +20% --volume +10%          # 调整语速和音量
+  github.com/difyz9/markdown2tts edge                                    # 使用默认配置
+  github.com/difyz9/markdown2tts edge -i input.txt                       # 指定输入文件
+  github.com/difyz9/markdown2tts edge -i input.txt -o /path/to/output   # 指定输入和输出
+  github.com/difyz9/markdown2tts edge --config custom.yaml              # 使用自定义配置
+  github.com/difyz9/markdown2tts edge --list-all                         # 列出所有可用语音
+  github.com/difyz9/markdown2tts edge --list zh                          # 列出中文语音
+  github.com/difyz9/markdown2tts edge --list en                          # 列出英文语音
+  github.com/difyz9/markdown2tts edge --voice zh-CN-YunyangNeural        # 使用指定语音
+  github.com/difyz9/markdown2tts edge --rate +20% --volume +10%          # 调整语速和音量
   # 智能Markdown模式（推荐用于.md文件）
-  tts_app edge -i document.md --smart-markdown -o output
+  github.com/difyz9/markdown2tts edge -i document.md --smart-markdown -o output
   # 传统模式（用于纯文本文件）
-  tts_app edge -i document.txt -o output
+  github.com/difyz9/markdown2tts edge -i document.txt -o output
   `,
 	Run: func(cmd *cobra.Command, args []string) {
 		err := runEdgeTTS()

@@ -56,6 +56,6 @@ concurrent:
 # - zh-CN-YunjianNeural: 云健（男声，磁性深沉）
 #
 # 使用命令查看更多音色：
-# ./tts_app edge --list-all    # 查看所有音色
-# ./tts_app edge --list zh     # 查看中文音色
-# ./tts_app edge --list en     # 查看英文音色
+# ./github.com/difyz9/markdown2tts edge --list-all    # 查看所有音色
+# ./github.com/difyz9/markdown2tts edge --list zh     # 查看中文音色
+# ./github.com/difyz9/markdown2tts edge --list en     # 查看英文音色

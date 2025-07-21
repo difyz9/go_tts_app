@@ -24,7 +24,7 @@
 ### 新用户体验
 ```bash
 # 下载应用后直接使用
-./tts_app edge -i your_text.txt
+./github.com/difyz9/markdown2tts edge -i your_text.txt
 # 应用会自动：
 # 1. 创建 config.yaml 配置文件
 # 2. 创建 input.txt 示例文件
@@ -35,13 +35,13 @@
 ### 手动初始化
 ```bash
 # 基本初始化
-./tts_app init
+./github.com/difyz9/markdown2tts init
 
 # 自定义配置
-./tts_app init --config my_config.yaml --input my_input.txt
+./github.com/difyz9/markdown2tts init --config my_config.yaml --input my_input.txt
 
 # 强制覆盖
-./tts_app init --force
+./github.com/difyz9/markdown2tts init --force
 ```
 
 ### 特殊字符处理示例

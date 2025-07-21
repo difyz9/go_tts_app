@@ -6,7 +6,7 @@ import (
 	"github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common/profile"
 	tts "github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/tts/v20190823"
 	"os"
-	"tts_app/model"
+	"github.com/difyz9/markdown2tts/model"
 )
 
 type TTSService struct {

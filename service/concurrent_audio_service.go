@@ -12,7 +12,7 @@ import (
 	"strings"
 	"sync"
 	"time"
-	"tts_app/model"
+	"github.com/difyz9/markdown2tts/model"
 
 	"golang.org/x/time/rate"
 )
