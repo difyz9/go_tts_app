@@ -11,6 +11,15 @@
 .cache-loader
 *.mp3
 
+# Test files (to avoid main function conflicts in CI)
+test_*.go
+debug_*.go
+
+# Output directories
+output/
+temp/
+test_*/
+
 # Misc
 .DS_Store
 .env.local
