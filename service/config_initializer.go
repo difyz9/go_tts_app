@@ -2,9 +2,9 @@ package service
 
 import (
 	"fmt"
+	"github.com/difyz9/markdown2tts/model"
 	"os"
 	"path/filepath"
-	"github.com/difyz9/markdown2tts/model"
 
 	"gopkg.in/yaml.v3"
 )

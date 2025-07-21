@@ -3,6 +3,7 @@ package service
 import (
 	"bufio"
 	"fmt"
+	"github.com/difyz9/markdown2tts/model"
 	"io"
 	"net/http"
 	"os"
@@ -10,7 +11,6 @@ import (
 	"strconv"
 	"strings"
 	"time"
-	"github.com/difyz9/markdown2tts/model"
 
 	"gopkg.in/yaml.v3"
 )

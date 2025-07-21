@@ -2,11 +2,11 @@ package service
 
 import (
 	"fmt"
+	"github.com/difyz9/markdown2tts/model"
 	"github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common"
 	"github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common/profile"
 	tts "github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/tts/v20190823"
 	"os"
-	"github.com/difyz9/markdown2tts/model"
 )
 
 type TTSService struct {

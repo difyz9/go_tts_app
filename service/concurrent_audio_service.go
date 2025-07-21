@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"context"
 	"fmt"
+	"github.com/difyz9/markdown2tts/model"
 	"io"
 	"net/http"
 	"os"
@@ -12,7 +13,6 @@ import (
 	"strings"
 	"sync"
 	"time"
-	"github.com/difyz9/markdown2tts/model"
 
 	"golang.org/x/time/rate"
 )

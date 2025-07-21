@@ -5,8 +5,8 @@ package cmd
 
 import (
 	"fmt"
-	"path/filepath"
 	"github.com/difyz9/markdown2tts/service"
+	"path/filepath"
 
 	"github.com/spf13/cobra"
 )

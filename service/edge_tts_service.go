@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"context"
 	"fmt"
+	"github.com/difyz9/markdown2tts/model"
 	"os"
 	"path/filepath"
 	"sort"
@@ -11,7 +12,6 @@ import (
 	"sync"
 	"text/tabwriter"
 	"time"
-	"github.com/difyz9/markdown2tts/model"
 
 	"github.com/difyz9/edge-tts-go/pkg/communicate"
 	"github.com/difyz9/edge-tts-go/pkg/types"

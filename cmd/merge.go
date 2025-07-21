@@ -5,13 +5,13 @@ package cmd
 
 import (
 	"fmt"
+	"github.com/difyz9/markdown2tts/service"
 	"os"
 	"path/filepath"
 	"regexp"
 	"sort"
 	"strconv"
 	"strings"
-	"github.com/difyz9/markdown2tts/service"
 
 	"github.com/spf13/cobra"
 )
