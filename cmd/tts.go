@@ -39,15 +39,10 @@ var ttsCmd = &cobra.Command{
 func runTTS() error {
 	// 如果没有指定配置文件，尝试默认位置
 	if configFile == "" {
-		// 尝试当前目录下的config.yaml
-		if _, err := filepath.Abs("config.yaml"); err == nil {
-			configFile = "config.yaml"
-		} else {
-			return fmt.Errorf("找不到配置文件，请在当前目录创建config.yaml或使用--config指定")
-		}
+		configFile = "config.yaml"
 	}
 
-	// 加载配置
+	// 加载配置（如果配置文件不存在会自动初始化）
 	configService, err := service.NewConfigService(configFile)
 	if err != nil {
 		return fmt.Errorf("加载配置失败: %v", err)

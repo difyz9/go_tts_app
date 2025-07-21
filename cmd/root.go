@@ -46,6 +46,9 @@ var rootCmd = &cobra.Command{
   🌍 跨平台支持    - Windows/macOS/Linux
 
 🚀 快速开始：
+  # 初始化配置（新用户）
+  tts_app init
+  
   # 免费转换（推荐）
   tts_app edge -i input.txt
   

@@ -32,9 +32,10 @@ type TTSResult struct {
 
 // ConcurrentAudioService 并发音频服务
 type ConcurrentAudioService struct {
-	config     *model.Config
-	ttsService *TTSService
-	limiter    *rate.Limiter
+	config        *model.Config
+	ttsService    *TTSService
+	limiter       *rate.Limiter
+	textProcessor *TextProcessor
 }
 
 // NewConcurrentAudioService 创建并发音频服务
@@ -44,9 +45,10 @@ func NewConcurrentAudioService(config *model.Config, ttsService *TTSService) *Co
 	limiter := rate.NewLimiter(rateLimit, config.Concurrent.RateLimit)
 
 	return &ConcurrentAudioService{
-		config:     config,
-		ttsService: ttsService,
-		limiter:    limiter,
+		config:        config,
+		ttsService:    ttsService,
+		limiter:       limiter,
+		textProcessor: NewTextProcessor(),
 	}
 }
 
@@ -74,27 +76,55 @@ func (cas *ConcurrentAudioService) ProcessInputFileConcurrent() error {
 
 	// 创建任务列表
 	tasks := make([]TTSTask, 0, len(lines))
+	validLineCount := 0
+	skippedLineCount := 0
+	
 	for i, line := range lines {
 		trimmedLine := strings.TrimSpace(line)
 		if trimmedLine == "" {
+			skippedLineCount++
 			continue // 跳过空行
 		}
 
-		// 跳过特定格式的标记行
-		if strings.HasPrefix(trimmedLine, "###") ||
-			strings.HasPrefix(trimmedLine, "**") ||
-			strings.HasPrefix(trimmedLine, "--") {
+		// 快速过滤明显的标记行（仅针对行首的标记）
+		if strings.HasPrefix(trimmedLine, "## ") ||
+			strings.HasPrefix(trimmedLine, "### ") ||
+			strings.HasPrefix(trimmedLine, "#### ") ||
+			strings.HasPrefix(trimmedLine, "** ") ||
+			strings.HasPrefix(trimmedLine, "| ") ||
+			trimmedLine == "##" ||
+			trimmedLine == "###" ||
+			trimmedLine == "####" ||
+			trimmedLine == "**" ||
+			trimmedLine == "***" ||
+			strings.HasPrefix(trimmedLine, "-- ") ||
+			strings.HasPrefix(trimmedLine, "-----") {
+			skippedLineCount++
 			continue // 跳过标记行
 		}
 
-		tasks = append(tasks, TTSTask{Index: i, Text: line})
+		// 使用文本处理器进行详细预处理和验证
+		if !cas.textProcessor.IsValidTextForTTS(line) {
+			skippedLineCount++
+			continue // 跳过无效行
+		}
+
+		// 处理文本以优化TTS效果
+		processedText := cas.textProcessor.ProcessText(line)
+		if processedText == "" {
+			skippedLineCount++
+			continue
+		}
+
+		validLineCount++
+		tasks = append(tasks, TTSTask{Index: i, Text: processedText})
 	}
 
 	if len(tasks) == 0 {
 		return fmt.Errorf("没有有效的文本行需要处理")
 	}
 
-	fmt.Printf("跳过 %d 个空行/标记行，实际处理 %d 行有效文本\n", len(lines)-len(tasks), len(tasks))
+	fmt.Printf("文本处理统计: 总行数=%d, 有效行数=%d, 跳过行数=%d\n", len(lines), validLineCount, skippedLineCount)
 
 	// 并发处理任务
 	results, err := cas.processTTSTasksConcurrent(tasks)

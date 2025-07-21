@@ -22,6 +22,25 @@ type ConfigService struct {
 
 // NewConfigService 创建配置服务
 func NewConfigService(configPath string) (*ConfigService, error) {
+	// 检查配置文件是否存在，如果不存在则初始化
+	if _, err := os.Stat(configPath); os.IsNotExist(err) {
+		fmt.Printf("配置文件 %s 不存在，正在自动初始化...\n", configPath)
+		
+		initializer := NewConfigInitializer()
+		if err := initializer.InitializeConfig(configPath); err != nil {
+			return nil, fmt.Errorf("初始化配置文件失败: %v", err)
+		}
+		
+		// 同时创建示例输入文件
+		inputFile := "input.txt"
+		if err := initializer.CreateSampleInputFile(inputFile); err != nil {
+			fmt.Printf("警告: 创建示例输入文件失败: %v\n", err)
+		}
+		
+		// 显示快速开始指南
+		initializer.ShowQuickStart()
+	}
+	
 	config, err := loadConfig(configPath)
 	if err != nil {
 		return nil, err
@@ -52,15 +71,17 @@ func loadConfig(configPath string) (*model.Config, error) {
 
 // AudioMergeService 音频合并服务
 type AudioMergeService struct {
-	config     *model.Config
-	ttsService *TTSService
+	config        *model.Config
+	ttsService    *TTSService
+	textProcessor *TextProcessor
 }
 
 // NewAudioMergeService 创建音频合并服务
 func NewAudioMergeService(config *model.Config, ttsService *TTSService) *AudioMergeService {
 	return &AudioMergeService{
-		config:     config,
-		ttsService: ttsService,
+		config:        config,
+		ttsService:    ttsService,
+		textProcessor: NewTextProcessor(),
 	}
 }
 
@@ -84,25 +105,49 @@ func (ams *AudioMergeService) ProcessHistoryFile() error {
 
 	// 为每行文本生成音频
 	audioFiles := make([]string, 0, len(lines))
-	skippedLines := 0
+	validLineCount := 0
+	skippedLineCount := 0
+	
 	for i, line := range lines {
 		trimmedLine := strings.TrimSpace(line)
 		if trimmedLine == "" {
-			skippedLines++
+			skippedLineCount++
 			continue // 跳过空行
 		}
 
-		// 跳过特定格式的标记行
-		if strings.HasPrefix(trimmedLine, "###") ||
-			strings.HasPrefix(trimmedLine, "**") ||
-			strings.HasPrefix(trimmedLine, "|") ||
+		// 快速过滤明显的标记行（仅针对行首的标记）
+		if strings.HasPrefix(trimmedLine, "## ") ||
+			strings.HasPrefix(trimmedLine, "### ") ||
+			strings.HasPrefix(trimmedLine, "#### ") ||
+			strings.HasPrefix(trimmedLine, "** ") ||
+			strings.HasPrefix(trimmedLine, "| ") ||
+			trimmedLine == "##" ||
+			trimmedLine == "###" ||
+			trimmedLine == "####" ||
+			trimmedLine == "**" ||
+			trimmedLine == "***" ||
+			strings.HasPrefix(trimmedLine, "-- ") ||
 			strings.HasPrefix(trimmedLine, "-----") {
-			skippedLines++
+			skippedLineCount++
 			continue // 跳过标记行
 		}
 
-		fmt.Printf("正在处理第 %d 行: %s\n", i+1, line)
-		audioFile, err := ams.generateAudioForText(line, i)
+		// 使用文本处理器进行详细预处理和验证
+		if !ams.textProcessor.IsValidTextForTTS(line) {
+			skippedLineCount++
+			continue // 跳过无效行
+		}
+
+		// 处理文本以优化TTS效果
+		processedText := ams.textProcessor.ProcessText(line)
+		if processedText == "" {
+			skippedLineCount++
+			continue
+		}
+
+		validLineCount++
+		fmt.Printf("正在处理第 %d 行: %s\n", i+1, processedText)
+		audioFile, err := ams.generateAudioForText(processedText, i)
 		if err != nil {
 			fmt.Printf("生成第 %d 行音频失败: %v\n", i+1, err)
 			continue
@@ -114,7 +159,7 @@ func (ams *AudioMergeService) ProcessHistoryFile() error {
 		return fmt.Errorf("没有成功生成任何音频文件")
 	}
 
-	fmt.Printf("跳过 %d 个空行/标记行，成功处理 %d 行有效文本\n", skippedLines, len(audioFiles))
+	fmt.Printf("文本处理统计: 总行数=%d, 有效行数=%d, 跳过行数=%d\n", len(lines), validLineCount, skippedLineCount)
 
 	// 合并音频文件
 	return ams.mergeAudioFiles(audioFiles)

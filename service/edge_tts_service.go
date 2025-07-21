@@ -34,8 +34,9 @@ type EdgeTTSResult struct {
 
 // EdgeTTSService Edge TTS服务
 type EdgeTTSService struct {
-	config  *model.Config
-	limiter *rate.Limiter
+	config        *model.Config
+	limiter       *rate.Limiter
+	textProcessor *TextProcessor
 }
 
 // NewEdgeTTSService 创建Edge TTS服务
@@ -45,8 +46,9 @@ func NewEdgeTTSService(config *model.Config) *EdgeTTSService {
 	limiter := rate.NewLimiter(rateLimit, config.Concurrent.RateLimit)
 
 	return &EdgeTTSService{
-		config:  config,
-		limiter: limiter,
+		config:        config,
+		limiter:       limiter,
+		textProcessor: NewTextProcessor(),
 	}
 }
 
@@ -80,11 +82,9 @@ func (ets *EdgeTTSService) ProcessInputFileConcurrent() error {
 			continue // 跳过空行
 		}
 
-		// 跳过特定格式的标记行
-		if strings.HasPrefix(trimmedLine, "###") ||
-			strings.HasPrefix(trimmedLine, "**") ||
-			strings.HasPrefix(trimmedLine, "-----") {
-			continue // 跳过标记行
+		// 使用文本处理器验证文本
+		if !ets.textProcessor.IsValidTextForTTS(trimmedLine) {
+			continue // 跳过无效文本
 		}
 
 		tasks = append(tasks, EdgeTTSTask{Index: i, Text: line})
@@ -227,6 +227,17 @@ func (ets *EdgeTTSService) edgeTTSWorker(workerID int, taskChan <-chan EdgeTTSTa
 func (ets *EdgeTTSService) generateAudioForText(text string, index int) (string, error) {
 	ctx := context.Background()
 
+	// 处理文本：去除特殊字符和格式
+	processedText := ets.textProcessor.ProcessText(text)
+	if strings.TrimSpace(processedText) == "" {
+		return "", fmt.Errorf("处理后的文本为空")
+	}
+
+	// 如果处理前后不同，显示处理效果
+	if processedText != text {
+		fmt.Printf("  📝 文本处理: \"%s\" → \"%s\"\n", text, processedText)
+	}
+
 	// 使用配置中的语音参数
 	voice := ets.config.EdgeTTS.Voice
 	if voice == "" {
@@ -250,7 +261,7 @@ func (ets *EdgeTTSService) generateAudioForText(text string, index int) (string,
 
 	// 创建Edge TTS通信实例
 	comm, err := communicate.NewCommunicate(
-		text,
+		processedText,
 		voice,
 		rate,   // rate - 语速
 		volume, // volume - 音量

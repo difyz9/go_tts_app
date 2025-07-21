@@ -20,34 +20,46 @@
 - **批量音频合并** - 自动合并为完整音频文件
 
 ### 🔧 **智能特性**
-- **智能文本过滤** - 自动跳过空行、标记行、短文本
+- **智能文本过滤** - 自动跳过空行、标记行、短文本 
+- **特殊字符处理** - 智能处理Markdown格式、转义字符、中英文混合等
 - **灵活配置管理** - 支持配置文件和命令行参数
 - **多格式支持** - 支持MP3、WAV等多种音频格式
 - **跨平台支持** - Windows、macOS、Linux全平台兼容
 
 ## 🚀 快速开始
 
-### 方式一：Edge TTS（推荐新手）
+### 方式一：一键初始化（推荐新用户）
 ```bash
 # 下载并解压最新版本
 wget https://github.com/difyz9/go-tts-app/releases/latest/download/tts_app_linux_amd64.tar.gz
 tar -xzf tts_app_linux_amd64.tar.gz
 
+# 初始化配置文件和示例文件
+./tts_app init
+
+# 立即开始转换（完全免费）
+./tts_app edge -i input.txt
+```
+
+### 方式二：Edge TTS（免费，无需配置）
+```bash
 # 创建测试文件
 echo "欢迎使用TTS应用，这是一个完全免费的语音合成工具" > test.txt
 
-# 立即开始转换（完全免费）
+# 立即开始转换（配置文件会自动创建）
 ./tts_app edge -i test.txt
 ```
 
-### 方式二：腾讯云TTS（企业用户）
+### 方式三：腾讯云TTS（企业用户）
 ```bash
-# 复制配置文件并填入API密钥
-cp config.yaml.example config.yaml
+# 初始化配置
+./tts_app init
+
 # 编辑 config.yaml，填入腾讯云密钥
+nano config.yaml
 
 # 使用腾讯云TTS
-./tts_app tts -i test.txt
+./tts_app tts -i input.txt
 ```
 
 ## 📋 命令详解
@@ -133,6 +145,37 @@ concurrent:
   batch_size: 10          # 批处理大小
 
 ```
+
+
+## 🔧 智能初始化
+
+### 自动配置创建
+应用首次运行时会自动检测并创建必需的配置文件：
+
+```bash
+# 首次运行任何命令时都会自动初始化
+./tts_app edge -i your_text.txt   # 自动创建 config.yaml 和 input.txt
+./tts_app tts -i your_text.txt    # 同样会自动初始化
+```
+
+### 手动初始化
+如果需要手动初始化或重新初始化：
+
+```bash
+# 基本初始化
+./tts_app init
+
+# 自定义文件名
+./tts_app init --config my_config.yaml --input my_input.txt
+
+# 强制覆盖已存在的文件
+./tts_app init --force
+```
+
+### 初始化内容
+- **config.yaml** - 完整的配置文件模板
+- **input.txt** - 包含示例内容的输入文件
+- **自动提示** - 详细的使用指南和下一步操作
 
 
 ## 🎯 使用场景
