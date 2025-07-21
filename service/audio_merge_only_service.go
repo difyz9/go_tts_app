@@ -145,11 +145,11 @@ func (amos *AudioMergeOnlyService) ValidateAudioFiles(audioFiles []string) error
 		}
 
 		// 检查文件是否可读
-		file, err := os.Open(file)
+		f, err := os.Open(file)
 		if err != nil {
 			return fmt.Errorf("无法打开文件 %d: %s, 错误: %v", i+1, file, err)
 		}
-		file.Close()
+		f.Close()
 	}
 
 	return nil
