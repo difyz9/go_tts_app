@@ -79,10 +79,10 @@ func runEdgeTTS(cmd *cobra.Command) error {
 	// 如果指定了输入文件，覆盖配置
 	if edgeInputFile != "" {
 		config.InputFile = edgeInputFile
-		
+
 		// 自动检测markdown文件并启用智能处理模式（仅当用户未明确设置smart-markdown标志时）
 		ext := strings.ToLower(filepath.Ext(edgeInputFile))
-		if (ext == ".md" || ext == ".markdown") {
+		if ext == ".md" || ext == ".markdown" {
 			// 检查用户是否明确设置了smart-markdown标志
 			smartMarkdownSet := cmd.Flags().Changed("smart-markdown")
 			if !smartMarkdownSet {

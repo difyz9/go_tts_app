@@ -584,10 +584,10 @@ func (cas *ConcurrentAudioService) ProcessMarkdownFileConcurrent() error {
 	if cas.textProcessor == nil {
 		cas.textProcessor = NewTextProcessor()
 	}
-	
+
 	// 处理Markdown文档，获取适合TTS的文本片段
 	processedTexts := cas.textProcessor.ProcessMarkdownDocument(string(content))
-	
+
 	if len(processedTexts) == 0 {
 		return fmt.Errorf("从Markdown文件中未提取到有效的文本内容")
 	}

@@ -58,10 +58,10 @@ func runTTS(cmd *cobra.Command) error {
 	// 如果指定了输入文件，覆盖配置
 	if inputFile != "" {
 		config.InputFile = inputFile
-		
+
 		// 自动检测markdown文件并启用智能处理模式（仅当用户未明确设置smart-markdown标志时）
 		ext := strings.ToLower(filepath.Ext(inputFile))
-		if (ext == ".md" || ext == ".markdown") {
+		if ext == ".md" || ext == ".markdown" {
 			// 检查用户是否明确设置了smart-markdown标志
 			smartMarkdownSet := cmd.Flags().Changed("smart-markdown")
 			if !smartMarkdownSet {
@@ -119,7 +119,7 @@ func runTTS(cmd *cobra.Command) error {
 	fmt.Printf("- 并发模式: 开启（默认）\n")
 	fmt.Printf("- 最大并发数: %d\n", config.Concurrent.MaxWorkers)
 	fmt.Printf("- 速率限制: %d次/秒\n", config.Concurrent.RateLimit)
-	
+
 	// 显示处理模式
 	if ttsSmartMarkdown {
 		fmt.Printf("- 处理模式: 智能Markdown模式（blackfriday解析）\n")
@@ -130,7 +130,7 @@ func runTTS(cmd *cobra.Command) error {
 
 	// 默认使用并发处理模式
 	concurrentAudioService := service.NewConcurrentAudioService(config, ttsService)
-	
+
 	// 根据模式选择处理方法
 	if ttsSmartMarkdown {
 		fmt.Println("开始智能Markdown处理（腾讯云TTS）...")
@@ -139,7 +139,7 @@ func runTTS(cmd *cobra.Command) error {
 		fmt.Println("开始并发处理文本文件（腾讯云TTS）...")
 		err = concurrentAudioService.ProcessInputFileConcurrent()
 	}
-	
+
 	if err != nil {
 		return fmt.Errorf("处理文件失败: %v", err)
 	}
