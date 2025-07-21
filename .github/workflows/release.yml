@@ -1,0 +1,68 @@
+name: Release Builds
+
+on:
+  release:
+    types: [created]
+
+env:
+  GO_VERSION: 1.23
+
+jobs:
+  build-release:
+    name: Build Release Binaries
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - goos: linux
+            goarch: amd64
+            suffix: ""
+          - goos: linux
+            goarch: arm64
+            suffix: ""
+          - goos: windows
+            goarch: amd64
+            suffix: ".exe"
+          - goos: darwin
+            goarch: amd64
+            suffix: ""
+          - goos: darwin
+            goarch: arm64
+            suffix: ""
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Go
+      uses: actions/setup-go@v4
+      with:
+        go-version: ${{ env.GO_VERSION }}
+
+    - name: Install dependencies
+      run: go mod download
+
+    - name: Build binary
+      env:
+        GOOS: ${{ matrix.goos }}
+        GOARCH: ${{ matrix.goarch }}
+        CGO_ENABLED: 0
+      run: |
+        BINARY_NAME="tts_app_${{ matrix.goos }}_${{ matrix.goarch }}${{ matrix.suffix }}"
+        go build -ldflags="-s -w -X main.version=${{ github.ref_name }}" -o "$BINARY_NAME" .
+        
+        # Create release package
+        if [ "${{ matrix.goos }}" = "windows" ]; then
+          zip "${BINARY_NAME%.exe}.zip" "$BINARY_NAME" config.yaml.example README.md LICENSE
+        else
+          tar -czf "${BINARY_NAME}.tar.gz" "$BINARY_NAME" config.yaml.example README.md LICENSE
+        fi
+
+    - name: Upload Release Asset
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ github.event.release.upload_url }}
+        asset_path: ./tts_app_${{ matrix.goos }}_${{ matrix.goarch }}${{ matrix.goos == 'windows' && '.zip' || '.tar.gz' }}
+        asset_name: tts_app_${{ matrix.goos }}_${{ matrix.goarch }}${{ matrix.goos == 'windows' && '.zip' || '.tar.gz' }}
+        asset_content_type: ${{ matrix.goos == 'windows' && 'application/zip' || 'application/gzip' }}

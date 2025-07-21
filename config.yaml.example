@@ -1,0 +1,61 @@
+# TTS语音合成应用配置文件
+
+# 输入文件配置
+input_file: "example_input.txt"      # 默认输入文件路径
+
+# 腾讯云TTS配置（企业用户）
+tencent_cloud:
+  secret_id: "your_secret_id"        # 腾讯云SecretID
+  secret_key: "your_secret_key"      # 腾讯云SecretKey  
+  region: "ap-beijing"               # 地域
+
+# TTS音频参数配置
+tts:
+  voice_type: 101008      # 音色ID：101008-智琪(女声), 101007-智慧(女声), 101003-智云(男声)
+  volume: 5               # 音量：0-10，默认5
+  speed: 1.0              # 语速：0.6-1.5，默认1.0
+  primary_language: 1     # 主语言：1-中文，2-英文
+  sample_rate: 16000      # 采样率：16000或8000
+  codec: "mp3"            # 编码格式：mp3或wav
+
+# Edge TTS配置（免费用户，推荐）
+edge_tts:
+  voice: "zh-CN-XiaoyiNeural"   # 语音名称，如：zh-CN-XiaoyiNeural(女声), zh-CN-YunyangNeural(男声)
+  rate: "+0%"                   # 语速调节：-50% 到 +100%
+  volume: "+0%"                 # 音量调节：-50% 到 +100%
+  pitch: "+0Hz"                 # 音调调节：-50Hz 到 +50Hz
+
+# 音频合并配置
+audio:
+  output_dir: "output"               # 输出目录
+  temp_dir: "temp"                   # 临时文件目录
+  final_output: "merged_audio.mp3"   # 最终输出文件名
+  silence_duration: 0.5              # 音频片段间的静音时长（秒）
+
+# 并发处理配置
+concurrent:
+  max_workers: 5          # 最大并发worker数量
+  rate_limit: 20          # 每秒最大请求数限制
+  batch_size: 10          # 批处理大小
+
+# 常用音色配置说明
+# 
+# 腾讯云TTS音色：
+# - 101003: 智云（男声）
+# - 101007: 智慧（女声）  
+# - 101008: 智琪（女声，推荐）
+# - 101004: 智衍（男声）
+# - 101005: 智雅（女声）
+#
+# Edge TTS中文音色（推荐）：
+# - zh-CN-XiaoyiNeural: 晓伊（女声，温和自然）
+# - zh-CN-YunyangNeural: 云扬（男声，成熟稳重）
+# - zh-CN-XiaochenNeural: 晓辰（女声，活泼可爱）
+# - zh-CN-YunxiNeural: 云希（男声，年轻阳光）
+# - zh-CN-XiaoxuanNeural: 晓萱（女声，知性优雅）
+# - zh-CN-YunjianNeural: 云健（男声，磁性深沉）
+#
+# 使用命令查看更多音色：
+# ./tts_app edge --list-all    # 查看所有音色
+# ./tts_app edge --list zh     # 查看中文音色
+# ./tts_app edge --list en     # 查看英文音色

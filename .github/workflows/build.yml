@@ -1,0 +1,213 @@
+name: Build and Release
+
+on:
+  push:
+    branches: [ main, develop ]
+    tags: [ 'v*' ]
+  pull_request:
+    branches: [ main ]
+
+env:
+  GO_VERSION: 1.23
+
+jobs:
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Go
+      uses: actions/setup-go@v4
+      with:
+        go-version: ${{ env.GO_VERSION }}
+
+    - name: Cache Go modules
+      uses: actions/cache@v3
+      with:
+        path: |
+          ~/.cache/go-build
+          ~/go/pkg/mod
+        key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+        restore-keys: |
+          ${{ runner.os }}-go-
+
+    - name: Install dependencies
+      run: go mod download
+
+    - name: Run tests
+      run: go test -v ./...
+
+    - name: Run go vet
+      run: go vet ./...
+
+    - name: Run go fmt
+      run: |
+        if [ "$(gofmt -s -l . | wc -l)" -gt 0 ]; then
+          gofmt -s -l .
+          exit 1
+        fi
+
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    needs: test
+    strategy:
+      matrix:
+        goos: [linux, windows, darwin]
+        goarch: [amd64, arm64]
+        exclude:
+          - goos: windows
+            goarch: arm64
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Go
+      uses: actions/setup-go@v4
+      with:
+        go-version: ${{ env.GO_VERSION }}
+
+    - name: Cache Go modules
+      uses: actions/cache@v3
+      with:
+        path: |
+          ~/.cache/go-build
+          ~/go/pkg/mod
+        key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+        restore-keys: |
+          ${{ runner.os }}-go-
+
+    - name: Install dependencies
+      run: go mod download
+
+    - name: Build binary
+      env:
+        GOOS: ${{ matrix.goos }}
+        GOARCH: ${{ matrix.goarch }}
+      run: |
+        mkdir -p dist
+        if [ "$GOOS" = "windows" ]; then
+          BINARY_NAME="tts_app_${GOOS}_${GOARCH}.exe"
+        else
+          BINARY_NAME="tts_app_${GOOS}_${GOARCH}"
+        fi
+        go build -ldflags="-s -w" -o "dist/$BINARY_NAME" .
+        
+        # Create archive
+        cd dist
+        if [ "$GOOS" = "windows" ]; then
+          zip "${BINARY_NAME%.exe}.zip" "$BINARY_NAME"
+        else
+          tar -czf "${BINARY_NAME}.tar.gz" "$BINARY_NAME"
+        fi
+
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: binaries-${{ matrix.goos }}-${{ matrix.goarch }}
+        path: dist/*
+
+  release:
+    name: Release
+    runs-on: ubuntu-latest
+    needs: build
+    if: startsWith(github.ref, 'refs/tags/v')
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Download all artifacts
+      uses: actions/download-artifact@v3
+      with:
+        path: dist
+
+    - name: Flatten artifacts
+      run: |
+        mkdir -p release
+        find dist -type f \( -name "*.tar.gz" -o -name "*.zip" \) -exec cp {} release/ \;
+
+    - name: Create Release
+      uses: softprops/action-gh-release@v1
+      with:
+        files: release/*
+        body: |
+          ## 🎉 Release ${{ github.ref_name }}
+          
+          ### 📥 下载说明
+          - **Linux AMD64**: `tts_app_linux_amd64.tar.gz`
+          - **Linux ARM64**: `tts_app_linux_arm64.tar.gz`
+          - **Windows AMD64**: `tts_app_windows_amd64.zip`
+          - **macOS Intel**: `tts_app_darwin_amd64.tar.gz`
+          - **macOS Apple Silicon**: `tts_app_darwin_arm64.tar.gz`
+          
+          ### 🚀 快速开始
+          ```bash
+          # 下载并解压（以Linux AMD64为例）
+          wget https://github.com/${{ github.repository }}/releases/download/${{ github.ref_name }}/tts_app_linux_amd64.tar.gz
+          tar -xzf tts_app_linux_amd64.tar.gz
+          chmod +x tts_app_linux_amd64
+          
+          # 立即开始使用（免费）
+          echo "欢迎使用TTS应用" > test.txt
+          ./tts_app_linux_amd64 edge -i test.txt
+          ```
+          
+          ### ✨ 主要特性
+          - 🆓 Edge TTS完全免费
+          - 🚀 并发处理，速度提升20倍
+          - 🎯 支持双引擎（腾讯云TTS + Edge TTS）
+          - 🔧 智能文本过滤
+          - 📊 实时进度显示
+          
+          ### 📚 使用文档
+          - [快速开始指南](https://github.com/${{ github.repository }}#-快速开始)
+          - [完整使用教程](https://github.com/${{ github.repository }}/wiki)
+          - [常见问题解答](https://github.com/${{ github.repository }}/issues?q=label%3Afaq)
+        draft: false
+        prerelease: false
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  docker:
+    name: Build Docker Image
+    runs-on: ubuntu-latest
+    needs: test
+    if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v')
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    - name: Login to Docker Hub
+      if: github.event_name != 'pull_request'
+      uses: docker/login-action@v3
+      with:
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+    - name: Extract metadata
+      id: meta
+      uses: docker/metadata-action@v5
+      with:
+        images: ${{ secrets.DOCKERHUB_USERNAME }}/go-tts-app
+        tags: |
+          type=ref,event=branch
+          type=ref,event=pr
+          type=semver,pattern={{version}}
+          type=semver,pattern={{major}}.{{minor}}
+          type=raw,value=latest,enable={{is_default_branch}}
+
+    - name: Build and push Docker image
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        platforms: linux/amd64,linux/arm64
+        push: ${{ github.event_name != 'pull_request' }}
+        tags: ${{ steps.meta.outputs.tags }}
+        labels: ${{ steps.meta.outputs.labels }}
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
