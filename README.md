@@ -386,7 +386,6 @@ GOOS=darwin GOARCH=arm64 go build -o markdown2tts_darwin_arm64
    - 确认腾讯云服务地域设置
 
 3. **文件权限错误**
-   - 确保程序有读取ai_history.txt的权限
    - 确保程序有创建输出目录和文件的权限
 
 4. **TTS任务失败**
