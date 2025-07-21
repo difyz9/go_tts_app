@@ -122,7 +122,7 @@ tencent_cloud:
   secret_key: "your_secret_key"
   region: "ap-beijing"
 
-# TTS音频参数
+# 腾讯TTS音频参数
 tts:
   voice_type: 101008      # 音色ID：101008-智琪(女声), 101007-智慧(女声), 101003-智云(男声)
   volume: 5               # 音量：0-10
@@ -229,7 +229,7 @@ concurrent:
 ## 📁 项目结构
 
 ```
-go-tts-app/
+markdown2tts/
 ├── main.go                 # 程序入口
 ├── config.yaml            # 配置文件
 ├── example_input.txt         # 示例输入文件
@@ -264,7 +264,7 @@ go-tts-app/
 ```bash
 # 克隆项目
 git clone https://github.com/difyz9/markdown2tts.git
-cd go-tts-app
+cd markdown2tts
 
 # 安装依赖
 go mod download
