@@ -4,7 +4,7 @@ on:
   push:
     tags:
       - 'v*'
-      
+
 # on:
 #   release:
 #     types: [created]
@@ -62,10 +62,17 @@ jobs:
           tar -czf "${BINARY_NAME}.tar.gz" "$BINARY_NAME" config.yaml.example README.md LICENSE
         fi
 
+    - name: Create Release
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        # Create release if it doesn't exist
+        gh release create ${{ github.ref_name }} --title "Release ${{ github.ref_name }}" --notes "Automated release for ${{ github.ref_name }}" || true
+
     - name: Upload Release Asset
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
         ASSET_PATH="./tts_app_${{ matrix.goos }}_${{ matrix.goarch }}${{ matrix.goos == 'windows' && '.zip' || '.tar.gz' }}"
         ASSET_NAME="tts_app_${{ matrix.goos }}_${{ matrix.goarch }}${{ matrix.goos == 'windows' && '.zip' || '.tar.gz' }}"
-        gh release upload ${{ github.event.release.tag_name }} "$ASSET_PATH" --name "$ASSET_NAME"
+        gh release upload ${{ github.ref_name }} "$ASSET_PATH" --name "$ASSET_NAME"
