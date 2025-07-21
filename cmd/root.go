@@ -24,7 +24,7 @@ func SetVersionInfo(version, buildTime, gitCommit string) {
 	appVersion = version
 	appBuildTime = buildTime
 	appGitCommit = gitCommit
-	
+
 	// 更新rootCmd的版本信息
 	rootCmd.Version = getVersionString()
 }
@@ -84,9 +84,7 @@ func init() {
 	// 全局标志
 	rootCmd.PersistentFlags().BoolP("help", "h", false, "显示帮助信息")
 	rootCmd.PersistentFlags().BoolP("version", "v", false, "显示版本信息")
-	
+
 	// 设置帮助标志不显示在使用说明中
 	rootCmd.PersistentFlags().MarkHidden("help")
 }
-
-

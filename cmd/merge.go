@@ -1,6 +1,5 @@
 /*
 Copyright © 2025 NAME HERE <EMAIL ADDRESS>
-
 */
 package cmd
 
@@ -120,7 +119,7 @@ type AudioFileInfo struct {
 // scanAudioFiles 扫描目录中的音频文件
 func scanAudioFiles(dir string) ([]AudioFileInfo, error) {
 	var audioFiles []AudioFileInfo
-	
+
 	// 支持的音频格式
 	audioExtensions := map[string]bool{
 		".mp3":  true,
@@ -146,7 +145,7 @@ func scanAudioFiles(dir string) ([]AudioFileInfo, error) {
 		if audioExtensions[ext] {
 			// 提取文件名中的数字
 			number := extractNumberFromFilename(info.Name())
-			
+
 			audioFiles = append(audioFiles, AudioFileInfo{
 				Path:   path,
 				Name:   info.Name(),
@@ -164,38 +163,38 @@ func scanAudioFiles(dir string) ([]AudioFileInfo, error) {
 func extractNumberFromFilename(filename string) int {
 	// 移除文件扩展名
 	nameWithoutExt := strings.TrimSuffix(filename, filepath.Ext(filename))
-	
+
 	// 使用正则表达式提取所有数字
 	re := regexp.MustCompile(`\d+`)
 	matches := re.FindAllString(nameWithoutExt, -1)
-	
+
 	if len(matches) == 0 {
 		// 如果没有找到数字，返回一个很大的数，让它排在最后
 		return 999999
 	}
-	
+
 	// 优先提取以下划线分隔的数字（如audio_001.mp3中的001）
 	// 或者取最长的数字序列
 	var bestMatch string
 	maxLength := 0
-	
+
 	for _, match := range matches {
 		if len(match) > maxLength {
 			maxLength = len(match)
 			bestMatch = match
 		}
 	}
-	
+
 	// 如果没有找到最佳匹配，取最后一个数字
 	if bestMatch == "" {
 		bestMatch = matches[len(matches)-1]
 	}
-	
+
 	number, err := strconv.Atoi(bestMatch)
 	if err != nil {
 		return 999999 // 转换失败时也排在最后
 	}
-	
+
 	return number
 }
 

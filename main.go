@@ -20,7 +20,7 @@ var (
 func main() {
 	// 设置版本信息到cmd包
 	cmd.SetVersionInfo(version, buildTime, gitCommit)
-	
+
 	// 执行根命令
 	cmd.Execute()
 }

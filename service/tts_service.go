@@ -2,11 +2,11 @@ package service
 
 import (
 	"fmt"
-	"os"
-	"tts_app/model"
 	"github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common"
 	"github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common/profile"
 	tts "github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/tts/v20190823"
+	"os"
+	"tts_app/model"
 )
 
 type TTSService struct {
@@ -32,10 +32,9 @@ func NewTTSService(secretId, secretKey, region string) *TTSService {
 	}
 
 	return &TTSService{
-		client: client,		
+		client: client,
 	}
 }
-
 
 // 创建TTS任务
 func (s *TTSService) CreateTTSTask(req *model.TTSRequest) (*model.TTSResponse, error) {

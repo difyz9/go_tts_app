@@ -1,6 +1,5 @@
 /*
 Copyright © 2025 NAME HERE <EMAIL ADDRESS>
-
 */
 package cmd
 
@@ -125,7 +124,7 @@ func runEdgeTTS() error {
 	fmt.Printf("- 最大并发数: %d\n", config.Concurrent.MaxWorkers)
 	fmt.Printf("- 速率限制: %d次/秒\n", config.Concurrent.RateLimit)
 	fmt.Printf("- TTS引擎: Microsoft Edge TTS (免费)\n")
-	
+
 	// 显示Edge TTS配置
 	voice := config.EdgeTTS.Voice
 	if voice == "" {
@@ -143,7 +142,7 @@ func runEdgeTTS() error {
 	if pitch == "" {
 		pitch = "+0Hz"
 	}
-	
+
 	fmt.Printf("- 语音: %s\n", voice)
 	fmt.Printf("- 语速: %s\n", rate)
 	fmt.Printf("- 音量: %s\n", volume)

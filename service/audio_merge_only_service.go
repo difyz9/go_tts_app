@@ -44,7 +44,7 @@ func (amos *AudioMergeOnlyService) MergeAudioFiles(audioFiles []string, outputPa
 	// 依次合并音频文件
 	for i, audioFile := range audioFiles {
 		fmt.Printf("合并文件 %d/%d: %s\n", i+1, len(audioFiles), filepath.Base(audioFile))
-		
+
 		// 检查文件是否存在
 		if _, err := os.Stat(audioFile); os.IsNotExist(err) {
 			fmt.Printf("⚠️  警告: 文件不存在，跳过: %s\n", audioFile)
@@ -98,7 +98,7 @@ func (amos *AudioMergeOnlyService) checkAudioFormatsCompatible(audioFiles []stri
 
 	// 获取第一个文件的扩展名作为基准
 	firstExt := strings.ToLower(filepath.Ext(audioFiles[0]))
-	
+
 	// 检查所有文件是否具有相同扩展名
 	for _, file := range audioFiles[1:] {
 		ext := strings.ToLower(filepath.Ext(file))
@@ -116,7 +116,7 @@ func (amos *AudioMergeOnlyService) MergeAudioFilesWithFFmpeg(audioFiles []string
 	// 目前使用简单的二进制拼接方式
 	fmt.Println("ℹ️  提示: 当前使用简单合并模式")
 	fmt.Println("如需高级音频处理，请安装FFmpeg并更新代码")
-	
+
 	return amos.MergeAudioFiles(audioFiles, outputPath)
 }
 
@@ -131,7 +131,7 @@ func (amos *AudioMergeOnlyService) ValidateAudioFiles(audioFiles []string) error
 		// 检查文件是否为音频文件（基于扩展名）
 		ext := strings.ToLower(filepath.Ext(file))
 		validExtensions := []string{".mp3", ".wav", ".m4a", ".aac", ".flac", ".ogg"}
-		
+
 		isValid := false
 		for _, validExt := range validExtensions {
 			if ext == validExt {
@@ -139,7 +139,7 @@ func (amos *AudioMergeOnlyService) ValidateAudioFiles(audioFiles []string) error
 				break
 			}
 		}
-		
+
 		if !isValid {
 			return fmt.Errorf("文件 %d 不是支持的音频格式: %s", i+1, file)
 		}

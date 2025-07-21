@@ -29,10 +29,10 @@ type TTSConfig struct {
 
 // EdgeTTSConfig Edge TTS配置
 type EdgeTTSConfig struct {
-	Voice  string `yaml:"voice"`   // 语音名称，如 zh-CN-XiaoyiNeural
-	Rate   string `yaml:"rate"`    // 语速，如 +10%, +0%, -10%
-	Volume string `yaml:"volume"`  // 音量，如 +10%, +0%, -10%
-	Pitch  string `yaml:"pitch"`   // 音调，如 +10Hz, +0Hz, -10Hz
+	Voice  string `yaml:"voice"`  // 语音名称，如 zh-CN-XiaoyiNeural
+	Rate   string `yaml:"rate"`   // 语速，如 +10%, +0%, -10%
+	Volume string `yaml:"volume"` // 音量，如 +10%, +0%, -10%
+	Pitch  string `yaml:"pitch"`  // 音调，如 +10Hz, +0Hz, -10Hz
 }
 
 // AudioConfig 音频合并配置
