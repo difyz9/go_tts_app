@@ -5,7 +5,7 @@
 /build
 
 /docs001
-
+.idea/
 # Generated files
 .docusaurus
 .cache-loader

@@ -24,9 +24,9 @@ tts:
 
 # Edge TTS配置（免费，无需API密钥）
 edge_tts:
-  voice: "zh-CN-XiaoyiNeural"     # 语音：zh-CN-XiaoyiNeural(晓伊), zh-CN-YunyangNeural(云扬)
+  voice: "zh-CN-YunxiNeural"     # 语音：zh-CN-XiaoyiNeural(晓伊), zh-CN-YunyangNeural(云扬)
                                   # en-US-JennyNeural(珍妮), ja-JP-NanamiNeural(七海)
-  rate: "+0%"                     # 语速：-50% 到 +100%，如 +10%, +0%, -20%
+  rate: "+10%"                     # 语速：-50% 到 +100%，如 +10%, +0%, -20%
   volume: "+0%"                   # 音量：-50% 到 +100%，如 +10%, +0%, -20%  
   pitch: "+0Hz"                   # 音调：-50Hz 到 +50Hz，如 +10Hz, +0Hz, -10Hz
 
