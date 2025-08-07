@@ -86,6 +86,7 @@ func runTTS(cmd *cobra.Command) error {
 		config.TencentCloud.SecretID,
 		config.TencentCloud.SecretKey,
 		config.TencentCloud.Region,
+		config,
 	)
 
 	if ttsService == nil {

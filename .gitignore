@@ -19,7 +19,7 @@ debug_*.go
 output/
 temp/
 test_*/
-
+config.yaml
 # Misc
 .DS_Store
 .env.local

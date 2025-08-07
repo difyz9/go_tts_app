@@ -244,11 +244,11 @@ func (cas *ConcurrentAudioService) worker(ctx context.Context, workerID int, tas
 	}
 }
 
-// readInputFile 读取历史文件
+// readInputFile 读取文件
 func (cas *ConcurrentAudioService) readInputFile() ([]string, error) {
 	file, err := os.Open(cas.config.InputFile)
 	if err != nil {
-		return nil, fmt.Errorf("打开历史文件失败: %v", err)
+		return nil, fmt.Errorf("打开文件失败: %v", err)
 	}
 	defer file.Close()
 

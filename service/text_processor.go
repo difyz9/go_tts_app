@@ -970,3 +970,39 @@ func (tp *TextProcessor) startsWithEmoji(text string) bool {
 
 	return false
 }
+
+// SplitTextIntelligently 智能分割文本，确保不超过最大长度
+func (tp *TextProcessor) SplitTextIntelligently(text string, maxLength int) string {
+	if len(text) <= maxLength {
+		return text
+	}
+
+	// 优先按照句号、感叹号、问号分割
+	sentenceEnds := []string{"。", "！", "？", ".", "!", "?"}
+	
+	for _, end := range sentenceEnds {
+		pos := strings.LastIndex(text[:maxLength], end)
+		if pos > 0 && pos < maxLength-1 {
+			return text[:pos+len(end)]
+		}
+	}
+
+	// 其次按照逗号、分号分割
+	pauseMarks := []string{"，", "；", ",", ";"}
+	
+	for _, mark := range pauseMarks {
+		pos := strings.LastIndex(text[:maxLength], mark)
+		if pos > 0 && pos < maxLength-1 {
+			return text[:pos+len(mark)]
+		}
+	}
+
+	// 最后按照空格分割
+	pos := strings.LastIndex(text[:maxLength], " ")
+	if pos > 0 {
+		return text[:pos]
+	}
+
+	// 如果都没有找到合适的分割点，直接截断
+	return text[:maxLength]
+}
